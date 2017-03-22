@@ -26,7 +26,7 @@ public class Restriction implements ISupport {
 
     public static <T> Restriction eq(String name, T value) {
         if (value instanceof String) {
-            return Restriction.builder().condition(getName(name) + "='" + value + "'").build();
+            return Restriction.builder().condition(getName(name) + "='" + SQLInjectPolicy.transform((String) value) + "'").build();
         }
         return Restriction.builder().condition(getName(name) + "=" + value).build();
     }
@@ -43,7 +43,7 @@ public class Restriction implements ISupport {
 
     public static <T> Restriction notEq(String name, T value) {
         if (value instanceof String) {
-            return Restriction.builder().condition(getName(name) + "!='" + value + "'").build();
+            return Restriction.builder().condition(getName(name) + "!='" + SQLInjectPolicy.transform((String) value) + "'").build();
         }
         return Restriction.builder().condition(getName(name) + "!=" + value).build();
     }
@@ -65,7 +65,7 @@ public class Restriction implements ISupport {
         for (R r : collection) {
             first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
             if (isString) {
-                builder.append("'").append(r).append("'");
+                builder.append("'").append(SQLInjectPolicy.transform((String) r)).append("'");
             } else {
                 builder.append(r);
             }
