@@ -34,7 +34,7 @@ public class Restriction implements ISupport {
     private static String getName(String name) {
         String[] split = name.split("\\.");
         if (split.length == 2) {
-            //连表的条件
+            //联表的条件，有表别名前缀
             return split[0] + "." + "`" + split[1] + "`";
         } else {
             return "`" + name + "`";
@@ -53,13 +53,22 @@ public class Restriction implements ISupport {
     }
 
     public static <R> Restriction in(String name, Collection<R> collection) {
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(collection), "arg list can't empty!");
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(collection), "arg list can't be empty!");
         boolean first = true;
+        R next = collection.iterator().next();
+        boolean isString = false;
+        if (next instanceof String) {
+            isString = true;
+        }
         StringBuilder builder = new StringBuilder(getName(name));
         builder.append(" IN (");
         for (R r : collection) {
             first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
-            builder.append(r);
+            if (isString) {
+                builder.append("'").append(r).append("'");
+            } else {
+                builder.append(r);
+            }
         }
         builder.append(")");
 
