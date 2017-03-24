@@ -49,7 +49,7 @@ public class Restriction implements ISupport {
     }
 
     public static Restriction like(String name, String value) {
-        return Restriction.builder().condition(getName(name) + " like CONCAT('" + SQLInjectPolicy.transform(value) + "','%')").build();
+        return Restriction.builder().condition(getName(name) + " like CONCAT('" + SQLInjectPolicy.transformForLike(value) + "','%')").build();
     }
 
     public static <R> Restriction in(String name, Collection<R> collection) {

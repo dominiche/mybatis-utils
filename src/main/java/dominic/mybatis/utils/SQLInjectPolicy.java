@@ -12,4 +12,14 @@ public class SQLInjectPolicy {
         srcSql = srcSql.replaceAll("\"", "\\\\\"");
         return srcSql;
     }
+
+    //防注入
+    public static String transformForLike(String srcSql) {
+        srcSql = srcSql.replaceAll("\\\\", "\\\\\\\\");
+        srcSql = srcSql.replaceAll("\'", "\\\\\'");
+        srcSql = srcSql.replaceAll("_", "\\\\_");
+        srcSql = srcSql.replaceAll("%", "\\\\%");
+        srcSql = srcSql.replaceAll("\"", "\\\\\"");
+        return srcSql;
+    }
 }
