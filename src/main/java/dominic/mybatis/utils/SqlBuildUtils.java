@@ -1,10 +1,6 @@
 package dominic.mybatis.utils;
 
-import dominic.mybatis.annotation.DateCondition;
-import dominic.mybatis.annotation.DateRangePolicy;
-import dominic.mybatis.annotation.DateTypePolicy;
-import dominic.mybatis.annotation.MyTransient;
-import dominic.mybatis.annotation.UseCamelCaseToUnderScore;
+import dominic.mybatis.annotation.*;
 import dominic.mybatis.support.Restriction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -31,52 +27,90 @@ public class SqlBuildUtils {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         Class<?> aClass = t.getClass();
+        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
                 first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
-                builder.append(getFieldName(field, t.getClass()));
+                builder.append(getFieldName(field, isUseUnderscoreToCamelCase));
             }
         }
         return builder;
     }
 
-    private static String getFieldName(Field field, Class<?> clazz) {
-        String fieldName = field.getName();
-        String name = camelCaseToUnderscore(fieldName, clazz);
+    public static String getFieldName(Field field, boolean isUseUnderscoreToCamelCase) {
+        String name = getFieldNameUnescaped(field, isUseUnderscoreToCamelCase);
         return "`" + name + "`";
     }
 
+    public static String getFieldNameUnescaped(Field field, boolean isUseUnderscoreToCamelCase) {
+        String name;
+        ColumnName columnName = field.getAnnotation(ColumnName.class);
+        if (null != columnName) {
+            name = columnName.value();
+        } else {
+            name = camelCaseToUnderscore(field.getName(), isUseUnderscoreToCamelCase);
+        }
+        return name;
+    }
+
+    /**
+     *尽量使用camelCaseToUnderscore(String fieldName, boolean isUseUnderscoreToCamelCase)这个方法
+     */
+    @Deprecated
     public static String camelCaseToUnderscore(String fieldName, Class<?> clazz) {
         StringBuilder name = new StringBuilder();
-        boolean flag = false;
-        UseCamelCaseToUnderScore annotation = clazz.getAnnotation(UseCamelCaseToUnderScore.class);
-        if (null != annotation) {
-            flag = true;
-        }
+        boolean flag = isUseUnderscoreToCamelCase(clazz);
         if (flag) {
-            for (char c : fieldName.toCharArray()) {
-                if (c >= 'A' && c <= 'Z') {
-                    name.append("_").append((char) (c + 32)); //to lower case
-                }  else {
-                    name.append(c);
-                }
-            }
+            doCamelCaseToUnderscore(fieldName, name);
         } else {
             name.append(fieldName);
         }
         return name.toString();
     }
 
+    public static String camelCaseToUnderscore(String fieldName, boolean isUseUnderscoreToCamelCase) {
+        StringBuilder name = new StringBuilder();
+        if (isUseUnderscoreToCamelCase) {
+            doCamelCaseToUnderscore(fieldName, name);
+        } else {
+            name.append(fieldName);
+        }
+        return name.toString();
+    }
+
+    private static void doCamelCaseToUnderscore(String fieldName, StringBuilder name) {
+        for (char c : fieldName.toCharArray()) {
+            if (c >= 'A' && c <= 'Z') {
+                name.append("_").append((char) (c + 32)); //to lower case
+            }  else {
+                name.append(c);
+            }
+        }
+    }
+
+    /**
+     * 是否开启了驼峰转下划线
+     */
+    public static boolean isUseUnderscoreToCamelCase(Class<?> clazz) {
+        boolean flag = false;
+        UseUnderScoreToCamelCase annotation = clazz.getAnnotation(UseUnderScoreToCamelCase.class);
+        if (null != annotation) {
+            flag = true;
+        }
+        return flag;
+    }
+
     public static <T> StringBuilder getFieldsWithAlias(T t, String alias) {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         Class<?> aClass = t.getClass();
+        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
                 first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
-                builder.append(alias).append(".").append(getFieldName(field, t.getClass()));
+                builder.append(alias).append(".").append(getFieldName(field, isUseUnderscoreToCamelCase));
             }
         }
         return builder;
@@ -85,11 +119,12 @@ public class SqlBuildUtils {
     public static StringBuilder getFieldsByClass(Class<?> aClass) {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
+        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
                 first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
-                builder.append(getFieldName(field, aClass));
+                builder.append(getFieldName(field, isUseUnderscoreToCamelCase));
             }
         }
         return builder;
@@ -98,11 +133,12 @@ public class SqlBuildUtils {
     public static StringBuilder getFieldsByClassWithAlias(Class<?> aClass, String alias) {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
+        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
                 first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
-                builder.append(alias).append(".").append(getFieldName(field, aClass));
+                builder.append(alias).append(".").append(getFieldName(field, isUseUnderscoreToCamelCase));
             }
         }
         return builder;
@@ -123,6 +159,7 @@ public class SqlBuildUtils {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         Class<?> aClass = t.getClass();
+        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
@@ -139,13 +176,13 @@ public class SqlBuildUtils {
                                 if (dateCondition !=null) {
                                     appendDateCondition(builder, str, dateCondition);
                                 } else {
-                                    builder.append(Restriction.like(getFieldName(field, t.getClass()), str).toSQL());
+                                    builder.append(Restriction.like(getFieldName(field, isUseUnderscoreToCamelCase), str).toSQL());
                                 }
                             }
                         } else {
                             first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_AND);
                             builder.append(prefix);
-                            builder.append(Restriction.eq(getFieldName(field, t.getClass()), o).toSQL());
+                            builder.append(Restriction.eq(getFieldName(field, isUseUnderscoreToCamelCase), o).toSQL());
                         }
                     }
                 } catch (IllegalAccessException e) {
@@ -186,6 +223,7 @@ public class SqlBuildUtils {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         Class<?> aClass = t.getClass();
+        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
@@ -199,14 +237,14 @@ public class SqlBuildUtils {
                             if (dateCondition !=null) {
                                 appendDateCondition(builder, (String) o, dateCondition);
                             } else {
-                                builder.append(getFieldName(field, t.getClass()))
+                                builder.append(getFieldName(field, isUseUnderscoreToCamelCase))
                                         .append(" like CONCAT(#{").append(param).append(".")
                                         .append(field.getName())
                                         .append("}, '%')");
                             }
                         } else {
                             first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_AND);
-                            builder.append(getFieldName(field, t.getClass()))
+                            builder.append(getFieldName(field, isUseUnderscoreToCamelCase))
                                     .append("=#{").append(param).append(".")
                                     .append(field.getName())
                                     .append("}");
@@ -266,6 +304,7 @@ public class SqlBuildUtils {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         Class<?> aClass = t.getClass();
+        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
@@ -275,7 +314,7 @@ public class SqlBuildUtils {
                     if ( o != null) {
                         first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
                         builder.append(prefix);
-                        builder.append(Restriction.eq(getFieldName(field, t.getClass()), o).toSQL());
+                        builder.append(Restriction.eq(getFieldName(field, isUseUnderscoreToCamelCase), o).toSQL());
                     }
                 } catch (IllegalAccessException e) {
                     log.error("doBuildUpdateFields: get field value exception:", e);
@@ -285,40 +324,5 @@ public class SqlBuildUtils {
         }
         return builder;
     }
-    //==============update Fields end=======================//
-
-
-    //==============update Fields end=======================//
-//    public static <T> String buildInsertSQL(T bean, String tableName) {
-////        Preconditions.checkNotNull(bean, "bean 不能为空！");
-//
-//        StringBuilder builder = new StringBuilder("INSERT INTO ").append(tableName).append("(");
-//        StringBuilder values = new StringBuilder(" VALUES(");
-//        Class<?> clazz = bean.getClass();
-//        boolean first = true;
-//        boolean value_first = true;
-//        Field[] fields = clazz.getDeclaredFields();
-//        for (Field field : fields) {
-//            field.setAccessible(true);
-//            if (!SqlBuildUtils.isIgnoreField(field) ){
-//                field.setAccessible(true);
-//                try {
-//                    Object o = field.get(bean);
-//                    if ( o != null) {
-//                        first = SqlBuildUtils.isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
-//                        builder.append(getFieldName(field, t.getClass()));
-//                        value_first = SqlBuildUtils.isFirstAndAppend(values, value_first, SqlBuildUtils.SEPARATOR_COMMA);
-//                        values.append(o);
-//                    }
-//                } catch (IllegalAccessException e) {
-//                    log.error("buildInsertSQL: get field value exception:", e);
-//                }
-//            }
-//        }
-//        builder.append(")");
-//        values.append(")");
-//        builder.append(values);
-//        return builder.toString();
-//    }
     //==============update Fields end=======================//
 }

@@ -22,8 +22,9 @@ public class TransformUtils {
         }
         try {
             T t = tClass.newInstance();
+            boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(tClass);
             for (Field field : tClass.getDeclaredFields()) {
-                String fieldName = SqlBuildUtils.camelCaseToUnderscore(field.getName(), tClass);
+                String fieldName = SqlBuildUtils.getFieldNameUnescaped(field, isUseUnderscoreToCamelCase);
                 Object value = map.get(fieldName);
                 if (null != value) {
                     field.setAccessible(true);

@@ -1,5 +1,6 @@
 package dominic.mybatis.support;
 
+import dominic.mybatis.utils.SQLInjectPolicy;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class UpdateField implements ISupport{
 
     public static <T> UpdateField set(String name, T value) {
         if (value instanceof String) {
-            return UpdateField.builder().field(name + "='" + value + "'").build();
+            return UpdateField.builder().field(name + "='" + SQLInjectPolicy.transform((String) value) + "'").build();
         }
         return UpdateField.builder().field(name + "=" + value).build();
     }

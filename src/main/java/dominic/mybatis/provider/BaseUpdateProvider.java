@@ -53,6 +53,7 @@ public class BaseUpdateProvider {
 
     private <T> void buildValues(T bean, String idName, SQL sql, boolean ignoreId) {
         Field[] fields = bean.getClass().getDeclaredFields();
+        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(bean.getClass());
         for (Field field : fields) {
             String fieldName = field.getName();
             if(SqlBuildUtils.isIgnoreField(field) ){
@@ -68,15 +69,11 @@ public class BaseUpdateProvider {
             try {
                 Object value = field.get(bean);
                 if(null != value){
-                    sql.VALUES(getFieldName(fieldName, bean.getClass()), "#{" + BaseUpdateProvider.BEAN +"." + fieldName + "}");
+                    sql.VALUES(SqlBuildUtils.getFieldName(field, isUseUnderscoreToCamelCase), "#{" + BaseUpdateProvider.BEAN +"." + fieldName + "}");
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    private <T> String getFieldName(String fieldName, Class<T> tClass) {
-        return "`" + SqlBuildUtils.camelCaseToUnderscore(fieldName,tClass ) + "`";
     }
 }
