@@ -113,7 +113,7 @@ public class Restriction implements ISupport {
     }
 
     @Override
-    public String toSQL() {
+    public String SQL() {
         return condition;
     }
 }

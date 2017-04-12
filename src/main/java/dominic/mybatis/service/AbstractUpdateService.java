@@ -67,7 +67,7 @@ public abstract class AbstractUpdateService<T> {
     }
 
     public int update(UpdateSupport updateSupport) {
-        return baseUpdateDAO.update(updateSupport.toSQL());
+        return baseUpdateDAO.update(updateSupport.SQL());
     }
 
     public int update(String updateSql) {

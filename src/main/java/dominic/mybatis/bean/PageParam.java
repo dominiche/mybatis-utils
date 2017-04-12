@@ -24,7 +24,7 @@ public class PageParam implements ISupport, Serializable{
     }
 
     @Override
-    public String toSQL() {
+    public String SQL() {
         return " limit " + getPageStart() + "," + pageSize;
     }
 }

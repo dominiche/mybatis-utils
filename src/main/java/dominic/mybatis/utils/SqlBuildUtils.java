@@ -176,13 +176,13 @@ public class SqlBuildUtils {
                                 if (dateCondition !=null) {
                                     appendDateCondition(builder, str, dateCondition);
                                 } else {
-                                    builder.append(Restriction.like(getFieldName(field, isUseUnderscoreToCamelCase), str).toSQL());
+                                    builder.append(Restriction.like(getFieldName(field, isUseUnderscoreToCamelCase), str).SQL());
                                 }
                             }
                         } else {
                             first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_AND);
                             builder.append(prefix);
-                            builder.append(Restriction.eq(getFieldName(field, isUseUnderscoreToCamelCase), o).toSQL());
+                            builder.append(Restriction.eq(getFieldName(field, isUseUnderscoreToCamelCase), o).SQL());
                         }
                     }
                 } catch (IllegalAccessException e) {
@@ -202,18 +202,18 @@ public class SqlBuildUtils {
         if(dateType == DateTypePolicy.DATE){
             if(range == DateRangePolicy.BEGIN){
                 String timeStr = DATE_FORMAT.format(date) + " 00:00:00";
-                builder.append(Restriction.dateGe(columnName, timeStr).toSQL());
+                builder.append(Restriction.dateGe(columnName, timeStr).SQL());
             }else if(range == DateRangePolicy.END){
                 String timeStr = DATE_FORMAT.format(date) + " 23:59:59";
-                builder.append(Restriction.dateLe(columnName, timeStr).toSQL());
+                builder.append(Restriction.dateLe(columnName, timeStr).SQL());
             }
         }
         if(dateType == DateTypePolicy.DATE_TIME){
             String timeStr = TIME_FORMAT.format(date);
             if(range == DateRangePolicy.BEGIN){
-                builder.append(Restriction.dateGe(columnName, timeStr).toSQL());
+                builder.append(Restriction.dateGe(columnName, timeStr).SQL());
             }else if(range == DateRangePolicy.END){
-                builder.append(Restriction.dateLe(columnName, timeStr).toSQL());
+                builder.append(Restriction.dateLe(columnName, timeStr).SQL());
             }
         }
     }
@@ -314,7 +314,7 @@ public class SqlBuildUtils {
                     if ( o != null) {
                         first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
                         builder.append(prefix);
-                        builder.append(Restriction.eq(getFieldName(field, isUseUnderscoreToCamelCase), o).toSQL());
+                        builder.append(Restriction.eq(getFieldName(field, isUseUnderscoreToCamelCase), o).SQL());
                     }
                 } catch (IllegalAccessException e) {
                     log.error("doBuildUpdateFields: get field value exception:", e);

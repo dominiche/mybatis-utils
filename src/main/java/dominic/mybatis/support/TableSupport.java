@@ -24,7 +24,7 @@ public class TableSupport implements ISupport {
     }
 
     @Override
-    public String toSQL() {
+    public String SQL() {
         return tableName + " AS " + alias;
     }
 }

@@ -36,20 +36,20 @@ public class JoinSelectSupport implements ISupport{
     private PageParam pageParam;
 
     @Override
-    public String toSQL() {
+    public String SQL() {
         Preconditions.checkNotNull(selectFields, "selectFields 不能为空！");
         Preconditions.checkNotNull(tableSupport, "tableSupport 不能为空！");
         StringBuilder builder = new StringBuilder("select ");
         builder.append(selectFields)
                 .append(" from ")
-                .append(tableSupport.toSQL());
+                .append(tableSupport.SQL());
         afterTable(builder);
         if (pageParam != null) {
             if (pageParam.getPageSize() != null && pageParam.getPageSize() > 0) {
                 if (pageParam.getPageIndex() == null || pageParam.getPageIndex() < 0) {
                     pageParam.setPageIndex(0);
                 }
-                builder.append(pageParam.toSQL());
+                builder.append(pageParam.SQL());
             }
         }
         return builder.toString();
@@ -61,20 +61,20 @@ public class JoinSelectSupport implements ISupport{
         StringBuilder builder = new StringBuilder("select ");
         builder.append("count(1)")
                 .append(" from ")
-                .append(tableSupport.toSQL());
+                .append(tableSupport.SQL());
         afterTable(builder);
         return builder.toString();
     }
 
     private void afterTable(StringBuilder builder) {
         if (joinSupportAppender != null) {
-            builder.append(" ").append(joinSupportAppender.toSQL());
+            builder.append(" ").append(joinSupportAppender.SQL());
         }
         if (StringUtils.isNotBlank(conditions)) {
             builder.append(" where ").append(conditions);
         }
         if (orderSupportAppender != null) {
-            builder.append(" order by ").append(orderSupportAppender.toSQL());
+            builder.append(" order by ").append(orderSupportAppender.SQL());
 
         }
     }

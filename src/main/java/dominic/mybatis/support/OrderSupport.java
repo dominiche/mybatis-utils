@@ -33,7 +33,7 @@ public class OrderSupport implements ISupport {
     }
 
     @Override
-    public String toSQL() {
+    public String SQL() {
         return orderField + " " + direction;
     }
 }

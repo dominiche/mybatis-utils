@@ -27,7 +27,7 @@ public abstract class AbstractAppender<T extends ISupport> implements ISupport {
     }
 
     @Override
-    public String toSQL() {
+    public String SQL() {
         if (CollectionUtils.isEmpty(appenderList)) {
             return "";
         }
@@ -39,7 +39,7 @@ public abstract class AbstractAppender<T extends ISupport> implements ISupport {
             } else {
                 builder.append(getSeparator());
             }
-            builder.append(support.toSQL());
+            builder.append(support.SQL());
         }
         return builder.toString();
     }

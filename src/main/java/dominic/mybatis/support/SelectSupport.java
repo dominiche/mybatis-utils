@@ -34,7 +34,7 @@ public class SelectSupport implements ISupport{
     private PageParam pageParam;
 
     @Override
-    public String toSQL() {
+    public String SQL() {
         Preconditions.checkNotNull(selectFields, "selectFields 不能为空！");
         Preconditions.checkNotNull(tableName, "tableName 不能为空！");
         StringBuilder builder = new StringBuilder("select ");
@@ -47,7 +47,7 @@ public class SelectSupport implements ISupport{
                 if (pageParam.getPageIndex() == null || pageParam.getPageIndex() < 0) {
                     pageParam.setPageIndex(0);
                 }
-                builder.append(pageParam.toSQL());
+                builder.append(pageParam.SQL());
             }
         }
         return builder.toString();
@@ -68,7 +68,7 @@ public class SelectSupport implements ISupport{
             builder.append(" where ").append(conditions);
         }
         if (orderSupportAppender != null) {
-            builder.append(" order by ").append(orderSupportAppender.toSQL());
+            builder.append(" order by ").append(orderSupportAppender.SQL());
 
         }
     }

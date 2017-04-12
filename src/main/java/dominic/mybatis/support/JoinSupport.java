@@ -51,7 +51,7 @@ public class JoinSupport implements ISupport {
     }
 
     @Override
-    public String toSQL() {
+    public String SQL() {
         return joinType + " " + tableName + " AS " + alias + " on " + onCondition;
     }
 }

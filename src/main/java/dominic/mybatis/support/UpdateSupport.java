@@ -27,7 +27,7 @@ public class UpdateSupport implements ISupport{
     private String conditions;
 
     @Override
-    public String toSQL() {
+    public String SQL() {
         Preconditions.checkNotNull(updateFields, "updateFields 不能为空！");
         Preconditions.checkNotNull(tableName, "tableName 不能为空！");
         StringBuilder builder = new StringBuilder("update ").append(tableName).append(" set ");

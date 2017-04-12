@@ -33,7 +33,7 @@ public class UpdateField implements ISupport{
     }
 
     @Override
-    public String toSQL() {
+    public String SQL() {
         return field;
     }
 }

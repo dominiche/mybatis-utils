@@ -56,10 +56,10 @@ public abstract class AbstractQueryService<T> {
         SelectSupport support = SelectSupport.builder()
                 .selectFields(SqlBuildUtils.getFieldsByClass(getClazz()).toString())
                 .tableName(getTableName())
-                .conditions(Restriction.in(getIdName(), idList).toSQL())
+                .conditions(Restriction.in(getIdName(), idList).SQL())
                 .build();
         List<T> list = new ArrayList<>();
-        List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(support.toSQL());
+        List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(support.SQL());
         if (CollectionUtils.isNotEmpty(mapList)) {
             list = TransformUtils.hashMapToBean(mapList, clazz);
         }
@@ -76,9 +76,9 @@ public abstract class AbstractQueryService<T> {
         SelectSupport support = SelectSupport.builder()
                 .selectFields(SqlBuildUtils.getFieldsByClass(getClazz()).toString())
                 .tableName(getTableName())
-                .conditions(Restriction.eq(getIdName(), id).toSQL())
+                .conditions(Restriction.eq(getIdName(), id).SQL())
                 .build();
-        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.toSQL());
+        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
@@ -86,7 +86,7 @@ public abstract class AbstractQueryService<T> {
         int count = baseQueryDAO.queryCountBySql(joinSelectSupport.toCountSQL());
         List<T> list = new ArrayList<>();
         if (count > 0) {
-            List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(joinSelectSupport.toSQL());
+            List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(joinSelectSupport.SQL());
             if (CollectionUtils.isNotEmpty(mapList)) {
                 list = TransformUtils.hashMapToBean(mapList, clazz);
             }
@@ -98,7 +98,7 @@ public abstract class AbstractQueryService<T> {
         int count = baseQueryDAO.queryCountBySql(support.toCountSQL());
         List<T> list = new ArrayList<>();
         if (count > 0) {
-            List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(support.toSQL());
+            List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(support.SQL());
             if (CollectionUtils.isNotEmpty(mapList)) {
                 list = TransformUtils.hashMapToBean(mapList, clazz);
             }
@@ -110,24 +110,24 @@ public abstract class AbstractQueryService<T> {
         SelectSupport support = SelectSupport.builder()
                 .selectFields(SqlBuildUtils.getFieldsByClass(clazz).toString())
                 .tableName(getTableName())
-                .conditions(Restriction.eq(column, columnValue).toSQL())
+                .conditions(Restriction.eq(column, columnValue).SQL())
                 .build();
-        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.toSQL());
+        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
     public T queryUnique(SelectSupport support) {
-        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.toSQL());
+        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
     public T queryUnique(JoinSelectSupport support) {
-        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.toSQL());
+        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
     public <K> K querySingleValue(SelectSupport support, Class<K> singleValueClassType) {
-        return baseQueryDAO.querySingleValueBySql(support.toSQL(), singleValueClassType);
+        return baseQueryDAO.querySingleValueBySql(support.SQL(), singleValueClassType);
     }
 
     public List<HashMap<String, Object>> querySpecialList(String sql) {
@@ -149,7 +149,7 @@ public abstract class AbstractQueryService<T> {
                 .orderSupportAppender(OrderSupportAppender.newInstance().append(OrderSupport.DESC(getIdName())))
                 .pageParam(PageParam.builder().pageIndex(0).pageSize(1).build())
                 .build();
-        Integer maxId = baseQueryDAO.querySingleValueBySql(support.toSQL(), Integer.class);
+        Integer maxId = baseQueryDAO.querySingleValueBySql(support.SQL(), Integer.class);
         if (null == maxId) {
             maxId = 0;
         }
