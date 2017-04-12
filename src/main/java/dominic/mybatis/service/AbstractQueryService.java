@@ -82,42 +82,6 @@ public abstract class AbstractQueryService<T> {
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
-//    /**
-//     * 根据主键名查询，默认主键名为id，主键名不是id的请在entity上加IdName注解
-//     * @param idList
-//     * @param <R>
-//     * @return
-//     */
-//    public <R> List<T> queryCustomFieldsByIdList(String customSelectFields, List<R> idList) {
-//        SelectSupport support = SelectSupport.builder()
-//                .selectFields(customSelectFields)
-//                .tableName(getTableName())
-//                .conditions(Restriction.in(getIdName(), idList).toSQL())
-//                .build();
-//        List<T> list = new ArrayList<>();
-//        List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(support.toSQL());
-//        if (CollectionUtils.isNotEmpty(mapList)) {
-//            list = TransformUtils.hashMapToBean(mapList, clazz);
-//        }
-//        return list;
-//    }
-
-//    /**
-//     * 根据主键名查询，默认主键名为id，主键名不是id的请在entity上加IdName注解
-//     * @param id
-//     * @param <R>
-//     * @return
-//     */
-//    public <R> T queryCustomFieldsById(String customSelectFields, R id) {
-//        SelectSupport support = SelectSupport.builder()
-//                .selectFields(customSelectFields)
-//                .tableName(getTableName())
-//                .conditions(Restriction.eq(getIdName(), id).toSQL())
-//                .build();
-//        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.toSQL());
-//        return TransformUtils.hashMapToBean(hashMap, clazz);
-//    }
-
     public PageList<T> queryBySql(JoinSelectSupport joinSelectSupport) {
         int count = baseQueryDAO.queryCountBySql(joinSelectSupport.toCountSQL());
         List<T> list = new ArrayList<>();

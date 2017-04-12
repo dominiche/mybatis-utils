@@ -1,16 +1,12 @@
 package dominic.mybatis.support;
 
+import com.google.common.base.Preconditions;
 import dominic.mybatis.utils.SQLInjectPolicy;
 import dominic.mybatis.utils.SqlBuildUtils;
-import com.google.common.base.Preconditions;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Collection;
-import java.util.List;
 
 import static dominic.mybatis.utils.SqlBuildUtils.isFirstAndAppend;
 
@@ -24,7 +20,7 @@ import static dominic.mybatis.utils.SqlBuildUtils.isFirstAndAppend;
 public class Restriction implements ISupport {
     private String condition;
 
-    public static <T> Restriction eq(String name, T value) {
+    public static <T> Restriction eq(String name, @NonNull T value) {
         if (value instanceof String) {
             return Restriction.builder().condition(getName(name) + "='" + SQLInjectPolicy.transform((String) value) + "'").build();
         }
@@ -41,15 +37,19 @@ public class Restriction implements ISupport {
         }
     }
 
-    public static <T> Restriction notEq(String name, T value) {
+    public static <T> Restriction notEq(String name, @NonNull T value) {
         if (value instanceof String) {
             return Restriction.builder().condition(getName(name) + "!='" + SQLInjectPolicy.transform((String) value) + "'").build();
         }
         return Restriction.builder().condition(getName(name) + "!=" + value).build();
     }
 
-    public static Restriction like(String name, String value) {
+    public static Restriction like(String name, @NonNull String value) {
         return Restriction.builder().condition(getName(name) + " like CONCAT('" + SQLInjectPolicy.transformForLike(value) + "','%')").build();
+    }
+
+    public static Restriction likeBoth(String name, @NonNull String value) {
+        return Restriction.builder().condition(getName(name) + " like CONCAT('%','" + SQLInjectPolicy.transformForLike(value) + "','%')").build();
     }
 
     public static <R> Restriction in(String name, Collection<R> collection) {
@@ -75,15 +75,40 @@ public class Restriction implements ISupport {
         return Restriction.builder().condition(builder.toString()).build();
     }
 
-    public static Restriction dateGe(String name, String value) {
+    @Deprecated
+    public static Restriction dateGe(String name, @NonNull String value) {
         return Restriction.builder().condition(getName(name) + " >='" + SQLInjectPolicy.transform(value) + "'").build();
     }
 
-    public static Restriction dateLe(String name, String value) {
+    @Deprecated
+    public static Restriction dateLe(String name, @NonNull String value) {
         return Restriction.builder().condition(getName(name) + " <='" + SQLInjectPolicy.transform(value) + "'").build();
     }
 
-    public static Restriction sql(String restriction) {
+    public static Restriction greaterEqual(String name, Object value) {
+        return getEqualRestriction(name, value, ">=");
+    }
+    public static Restriction greaterThan(String name, Object value) {
+        return getEqualRestriction(name, value, ">");
+    }
+    public static Restriction lessEqual(String name, Object value) {
+        return getEqualRestriction(name, value, "<=");
+    }
+    public static Restriction lessThan(String name, Object value) {
+        return getEqualRestriction(name, value, "<");
+    }
+    private static Restriction getEqualRestriction(String name, @NonNull Object value, String equalSign) {
+        StringBuilder builder = new StringBuilder(getName(name));
+        builder.append(" ").append(equalSign).append(" ");
+        if (value instanceof String) {
+            builder.append("'").append(SQLInjectPolicy.transform((String) value)).append("'");
+        } else {
+            builder.append(value);
+        }
+        return Restriction.builder().condition(builder.toString()).build();
+    }
+
+    public static Restriction sql(@NonNull String restriction) {
         return Restriction.builder().condition(restriction).build();
     }
 

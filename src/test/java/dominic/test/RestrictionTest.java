@@ -21,4 +21,22 @@ public class RestrictionTest {
         Restriction in = Restriction.eq("id", "a'bc");
         System.out.println(in.toSQL());
     }
+
+    @Test
+    public void testSql() {
+        Restriction in = Restriction.sql("a=123");
+        System.out.println(in.toSQL());
+    }
+
+    @Test
+    public void testLike() {
+        Restriction in = Restriction.likeBoth("a", "lala");
+        System.out.println(in.toSQL());
+    }
+
+    @Test
+    public void testLess() {
+        Restriction in = Restriction.lessEqual("a", 123);
+        System.out.println(in.toSQL());
+    }
 }
