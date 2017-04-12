@@ -2,13 +2,13 @@ package dominic.mybatis.service;
 
 import dominic.mybatis.annotation.IdName;
 import dominic.mybatis.annotation.TableName;
-import dominic.mybatis.bean.PageList;
 import dominic.mybatis.bean.PageParam;
 import dominic.mybatis.dao.BaseQueryDAO;
 import dominic.mybatis.support.*;
 import dominic.mybatis.utils.SqlBuildUtils;
 import dominic.mybatis.utils.TransformUtils;
 import lombok.Getter;
+import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,7 +36,7 @@ public abstract class AbstractQueryService<T> {
 
         TableName tableNameAnnotation = clazz.getAnnotation(TableName.class);
         if (null == tableNameAnnotation) {
-            throw new RuntimeException("还没有指定表名！请在entity上加TableName注解。entity: " + clazz.getName() );
+            throw new RuntimeException("还没有指定表名！请在entity上加@TableName注解。entity: " + clazz.getName() );
         }
         tableName = tableNameAnnotation.value();
 
@@ -82,28 +82,22 @@ public abstract class AbstractQueryService<T> {
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
-    public PageList<T> queryBySql(JoinSelectSupport joinSelectSupport) {
-        int count = baseQueryDAO.queryCountBySql(joinSelectSupport.toCountSQL());
+    public List<T> queryBySql(@NonNull String sql) {
         List<T> list = new ArrayList<>();
-        if (count > 0) {
-            List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(joinSelectSupport.SQL());
-            if (CollectionUtils.isNotEmpty(mapList)) {
-                list = TransformUtils.hashMapToBean(mapList, clazz);
-            }
+        List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(sql);
+        if (CollectionUtils.isNotEmpty(mapList)) {
+            list = TransformUtils.hashMapToBean(mapList, clazz);
         }
-        return PageList.build(list, count, joinSelectSupport.getPageParam());
+        return list;
     }
 
-    public PageList<T> queryBySql(SelectSupport support) {
-        int count = baseQueryDAO.queryCountBySql(support.toCountSQL());
+    public List<T> queryBySql(ISelectSupport iSelectSupport) {
         List<T> list = new ArrayList<>();
-        if (count > 0) {
-            List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(support.SQL());
-            if (CollectionUtils.isNotEmpty(mapList)) {
-                list = TransformUtils.hashMapToBean(mapList, clazz);
-            }
+        List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(iSelectSupport.SQL());
+        if (CollectionUtils.isNotEmpty(mapList)) {
+            list = TransformUtils.hashMapToBean(mapList, clazz);
         }
-        return PageList.build(list, count, support.getPageParam());
+        return list;
     }
 
     public <R> T queryUnique(String column, R columnValue) {
@@ -140,27 +134,33 @@ public abstract class AbstractQueryService<T> {
 
     /**
      * 默认Id名为id，不是id的请在entity上加IdName注解
-     * @return
      */
-    public Integer queryMaxIdValue() {
+    public Long queryMaxIdLongValue() {
         SelectSupport support = SelectSupport.builder()
                 .selectFields(getIdName())
                 .tableName(getTableName())
                 .orderSupportAppender(OrderSupportAppender.newInstance().append(OrderSupport.DESC(getIdName())))
                 .pageParam(PageParam.builder().pageIndex(0).pageSize(1).build())
                 .build();
-        Integer maxId = baseQueryDAO.querySingleValueBySql(support.SQL(), Integer.class);
+        Long maxId = baseQueryDAO.querySingleValueBySql(support.SQL(), Long.class);
         if (null == maxId) {
-            maxId = 0;
+            maxId = 0L;
         }
         return maxId;
     }
 
-    public int queryCount(SelectSupport support) {
-        return baseQueryDAO.queryCountBySql(support.toCountSQL());
+    /**
+     * 默认Id名为id，不是id的请在entity上加IdName注解
+     */
+    public Integer queryMaxIdValue() {
+        return queryMaxIdLongValue().intValue();
     }
 
-    public int queryCount(String sql) {
+    public long queryCount(ISelectSupport support) {
+        return baseQueryDAO.queryCountBySql(support.countSQL());
+    }
+
+    public long queryCount(String sql) {
         return baseQueryDAO.queryCountBySql(sql);
     }
 

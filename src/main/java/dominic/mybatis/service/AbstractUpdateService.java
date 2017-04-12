@@ -35,7 +35,7 @@ public abstract class AbstractUpdateService<T> {
 
         TableName tableNameAnnotation = clazz.getAnnotation(TableName.class);
         if (null == tableNameAnnotation) {
-            throw new RuntimeException("还没有指定表名！请在entity上加TableName注解。entity: " + clazz.getName() );
+            throw new RuntimeException("还没有指定表名！请在entity上加@TableName注解。entity: " + clazz.getName() );
         }
         tableName = tableNameAnnotation.value();
 

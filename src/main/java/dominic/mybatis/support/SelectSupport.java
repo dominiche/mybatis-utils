@@ -15,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SelectSupport implements ISupport{
+public class SelectSupport implements ISelectSupport{
     /**
      * select部分
      */
@@ -53,7 +53,8 @@ public class SelectSupport implements ISupport{
         return builder.toString();
     }
 
-    public String toCountSQL() {
+    @Override
+    public String countSQL() {
         Preconditions.checkNotNull(tableName, "tableName 不能为空！");
         StringBuilder builder = new StringBuilder("select ");
         builder.append("count(1)")

@@ -17,7 +17,7 @@ public interface BaseQueryDAO {
     List<HashMap<String, Object>> queryBySql(@Param("sql") String sql);
 
     @SelectProvider(type = BaseQueryProvider.class, method = BaseQueryProvider.QUERY_BY_SQL)
-    int queryCountBySql(@Param("sql") String sql);
+    long queryCountBySql(@Param("sql") String sql);
 
     @SelectProvider(type = BaseQueryProvider.class, method = BaseQueryProvider.QUERY_BY_SQL)
     HashMap<String, Object> queryUniqueBySql(@Param("sql") String sql);

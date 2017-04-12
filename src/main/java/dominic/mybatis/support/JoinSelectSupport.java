@@ -15,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JoinSelectSupport implements ISupport{
+public class JoinSelectSupport implements ISelectSupport{
     /**
      * select部分，带有表别名
      */
@@ -55,7 +55,8 @@ public class JoinSelectSupport implements ISupport{
         return builder.toString();
     }
 
-    public String toCountSQL() {
+    @Override
+    public String countSQL() {
         Preconditions.checkNotNull(selectFields, "selectFields 不能为空！");
         Preconditions.checkNotNull(tableSupport, "tableSupport 不能为空！");
         StringBuilder builder = new StringBuilder("select ");
