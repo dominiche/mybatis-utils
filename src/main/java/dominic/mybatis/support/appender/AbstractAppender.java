@@ -1,6 +1,7 @@
-package dominic.mybatis.support;
+package dominic.mybatis.support.appender;
 
 
+import dominic.mybatis.support.ISupport;
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 

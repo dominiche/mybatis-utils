@@ -1,6 +1,7 @@
-package dominic.mybatis.support;
+package dominic.mybatis.support.build;
 
 import com.google.common.base.Preconditions;
+import dominic.mybatis.support.ISupport;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateSupport implements ISupport{
+public class UpdateSupport implements ISupport {
     /**
      * update fields部分
      */

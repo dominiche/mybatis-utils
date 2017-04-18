@@ -1,9 +1,11 @@
-package dominic.mybatis.support;
+package dominic.mybatis.support.appender;
+
+import dominic.mybatis.support.JoinSupport;
 
 /**
  * Created by herongxing on 2017/2/28 14:31.
  */
-public class JoinSupportAppender extends AbstractAppender<JoinSupport>{
+public class JoinSupportAppender extends AbstractAppender<JoinSupport> {
 
     public static JoinSupportAppender newInstance() {
         return new JoinSupportAppender();

@@ -3,9 +3,12 @@ package dominic.mybatis.service;
 import dominic.mybatis.annotation.IdName;
 import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.bean.IdContainer;
-import dominic.mybatis.dao.BaseUpdateDAO;
+import dominic.mybatis.dao.update.BaseUpdateDAO;
+import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.UpdateField;
-import dominic.mybatis.support.UpdateSupport;
+import dominic.mybatis.support.build.UpdateSupport;
+import dominic.mybatis.support.stream.Restrictions;
+import dominic.mybatis.support.stream.UpdateFields;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.jdbc.SQL;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -66,7 +70,21 @@ public abstract class AbstractUpdateService<T> {
         return baseUpdateDAO.update(sql);
     }
 
+    public <R> int updateById(String updateFields, Collection<R> ids) {
+        String sql = "UPDATE " + getTableName() + " SET " + updateFields + " where " + Restriction.in(getIdName(), ids).SQL();
+        return baseUpdateDAO.update(sql);
+    }
+
     public int update(UpdateSupport updateSupport) {
+        return baseUpdateDAO.update(updateSupport.SQL());
+    }
+
+    public int update(UpdateFields updateFields, Restrictions restrictions) {
+        UpdateSupport updateSupport = UpdateSupport.builder()
+                .updateFields(updateFields.SQL())
+                .tableName(getTableName())
+                .conditions(restrictions.SQL())
+                .build();
         return baseUpdateDAO.update(updateSupport.SQL());
     }
 

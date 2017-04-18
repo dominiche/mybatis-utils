@@ -1,4 +1,4 @@
-package dominic.mybatis.dao;
+package dominic.mybatis.dao.update;
 
 import dominic.mybatis.bean.IdContainer;
 import dominic.mybatis.provider.BaseUpdateProvider;

@@ -116,4 +116,9 @@ public class Restriction implements ISupport {
     public String SQL() {
         return condition;
     }
+
+    @Override
+    public String toString() {
+        return SQL();
+    }
 }

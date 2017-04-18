@@ -1,10 +1,7 @@
 package dominic.mybatis.support;
 
 import dominic.mybatis.utils.SQLInjectPolicy;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * Created by herongxing on 2017/2/27 18:39.
@@ -21,19 +18,24 @@ public class UpdateField implements ISupport{
      */
     private String field;
 
-    public static <T> UpdateField set(String name, T value) {
+    public static <T> UpdateField set(@NonNull String name, @NonNull T value) {
         if (value instanceof String) {
             return UpdateField.builder().field(name + "='" + SQLInjectPolicy.transform((String) value) + "'").build();
         }
         return UpdateField.builder().field(name + "=" + value).build();
     }
 
-    public static UpdateField setBySql(String field) {
+    public static UpdateField setBySql(@NonNull String field) {
         return UpdateField.builder().field(field).build();
     }
 
     @Override
     public String SQL() {
         return field;
+    }
+
+    @Override
+    public String toString() {
+        return SQL();
     }
 }

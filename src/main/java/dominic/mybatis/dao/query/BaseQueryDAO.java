@@ -1,4 +1,4 @@
-package dominic.mybatis.dao;
+package dominic.mybatis.dao.query;
 
 import dominic.mybatis.provider.BaseQueryProvider;
 import org.apache.ibatis.annotations.Param;

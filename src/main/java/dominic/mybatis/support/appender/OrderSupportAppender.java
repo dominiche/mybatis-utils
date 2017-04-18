@@ -1,4 +1,6 @@
-package dominic.mybatis.support;
+package dominic.mybatis.support.appender;
+
+import dominic.mybatis.support.OrderSupport;
 
 /**
  * Created by herongxing on 2017/2/28 15:14.

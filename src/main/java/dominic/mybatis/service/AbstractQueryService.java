@@ -3,8 +3,13 @@ package dominic.mybatis.service;
 import dominic.mybatis.annotation.IdName;
 import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.bean.PageParam;
-import dominic.mybatis.dao.BaseQueryDAO;
+import dominic.mybatis.dao.query.BaseQueryDAO;
 import dominic.mybatis.support.*;
+import dominic.mybatis.support.appender.OrderSupportAppender;
+import dominic.mybatis.support.build.ISelectSupport;
+import dominic.mybatis.support.build.JoinSelectSupport;
+import dominic.mybatis.support.build.SelectSupport;
+import dominic.mybatis.support.stream.Restrictions;
 import dominic.mybatis.utils.SqlBuildUtils;
 import dominic.mybatis.utils.TransformUtils;
 import lombok.Getter;
@@ -82,6 +87,20 @@ public abstract class AbstractQueryService<T> {
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
+    public List<T> query(@NonNull Restrictions restrictions) {
+        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), restrictions.SQL());
+        return queryBySql(support.SQL());
+    }
+
+    public List<T> query(@NonNull String customColumns,@NonNull Restrictions restrictions) {
+        SelectSupport support = getSelectSupport(customColumns, restrictions.SQL());
+        return queryBySql(support.SQL());
+    }
+
+    public List<T> queryBySql(ISelectSupport iSelectSupport) {
+        return queryBySql(iSelectSupport.SQL());
+    }
+
     public List<T> queryBySql(@NonNull String sql) {
         List<T> list = new ArrayList<>();
         List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(sql);
@@ -91,37 +110,29 @@ public abstract class AbstractQueryService<T> {
         return list;
     }
 
-    public List<T> queryBySql(ISelectSupport iSelectSupport) {
-        List<T> list = new ArrayList<>();
-        List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(iSelectSupport.SQL());
-        if (CollectionUtils.isNotEmpty(mapList)) {
-            list = TransformUtils.hashMapToBean(mapList, clazz);
-        }
-        return list;
-    }
-
-    public <R> T queryUnique(String column, R columnValue) {
-        SelectSupport support = SelectSupport.builder()
-                .selectFields(SqlBuildUtils.getFieldsByClass(clazz).toString())
-                .tableName(getTableName())
-                .conditions(Restriction.eq(column, columnValue).SQL())
-                .build();
+    public <R> T queryUnique(@NonNull String column, @NonNull R columnValue) {
+        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), Restriction.eq(column, columnValue).SQL());
         HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
-    public T queryUnique(SelectSupport support) {
+    private SelectSupport getSelectSupport(String columns, String conditions) {
+        return SelectSupport.builder()
+                    .selectFields(SqlBuildUtils.getFieldsByClass(clazz).toString())
+                    .tableName(getTableName())
+                    .conditions(conditions)
+                    .build();
+    }
+
+    public T queryUnique(@NonNull Restrictions restrictions) {
+        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), restrictions.SQL());
         HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
-    public T queryUnique(JoinSelectSupport support) {
-        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
-        return TransformUtils.hashMapToBean(hashMap, clazz);
-    }
-
-    public <K> K querySingleValue(SelectSupport support, Class<K> singleValueClassType) {
-        return baseQueryDAO.querySingleValueBySql(support.SQL(), singleValueClassType);
+    public <R> R querySingleValue(@NonNull String column, @NonNull Class<R> singleValueType, @NonNull Restrictions restrictions) {
+        SelectSupport support = getSelectSupport(column, restrictions.SQL());
+        return baseQueryDAO.querySingleValueBySql(support.SQL(), singleValueType);
     }
 
     public List<HashMap<String, Object>> querySpecialList(String sql) {
