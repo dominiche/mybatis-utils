@@ -80,10 +80,10 @@ public class Restrictions implements ISupport{
             appender.append(Restriction.lessThan(name, value));
             return this;
         }
-        public Restrictions.RestrictionsBuilder or(Restrictions restrictions) {
-            appender.append(Restriction.sql(restrictions.SQL()));
-            return this;
-        }
+//        public Restrictions.RestrictionsBuilder or(Restrictions restrictions) {
+//            appender.append(Restriction.sql(restrictions.SQL()));
+//            return this;
+//        }//还不支持
         public Restrictions.RestrictionsBuilder sql(String restriction) {
             appender.append(Restriction.sql(restriction));
             return this;

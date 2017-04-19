@@ -57,7 +57,7 @@ public abstract class AbstractQueryService<T> {
      * @param <R>
      * @return
      */
-    public <R> List<T> queryByIdList(List<R> idList) {
+    public <R extends Number> List<T> queryByIdList(List<R> idList) {
         SelectSupport support = SelectSupport.builder()
                 .selectFields(SqlBuildUtils.getFieldsByClass(getClazz()).toString())
                 .tableName(getTableName())
@@ -77,7 +77,7 @@ public abstract class AbstractQueryService<T> {
      * @param <R>
      * @return
      */
-    public <R> T queryById(R id) {
+    public <R extends Number> T queryById(R id) {
         SelectSupport support = SelectSupport.builder()
                 .selectFields(SqlBuildUtils.getFieldsByClass(getClazz()).toString())
                 .tableName(getTableName())

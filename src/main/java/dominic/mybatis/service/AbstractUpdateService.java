@@ -57,7 +57,7 @@ public abstract class AbstractUpdateService<T> {
      * @param <R>
      * @return
      */
-    public <R> int updateById(UpdateField updateField, R id) {
+    public <R extends Number> int updateById(UpdateField updateField, R id) {
         SQL sql = new SQL();
         sql.UPDATE(getTableName())
                 .SET(updateField.getField())
@@ -65,12 +65,12 @@ public abstract class AbstractUpdateService<T> {
         return baseUpdateDAO.update(sql.toString());
     }
 
-    public <R> int updateById(String updateFields, R id) {
+    public <R extends Number> int updateById(String updateFields, R id) {
         String sql = "UPDATE " + getTableName() + " SET " + updateFields + " where " + getIdName() + "=" + id;
         return baseUpdateDAO.update(sql);
     }
-
-    public <R> int updateById(String updateFields, Collection<R> ids) {
+    //todo 优化，这里调用时有点迷糊
+    public <R extends Number> int updateById(String updateFields, Collection<R> ids) {
         String sql = "UPDATE " + getTableName() + " SET " + updateFields + " where " + Restriction.in(getIdName(), ids).SQL();
         return baseUpdateDAO.update(sql);
     }

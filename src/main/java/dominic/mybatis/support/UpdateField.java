@@ -1,7 +1,10 @@
 package dominic.mybatis.support;
 
 import dominic.mybatis.utils.SQLInjectPolicy;
+import dominic.mybatis.utils.SqlBuildUtils;
 import lombok.*;
+
+import java.util.Date;
 
 /**
  * Created by herongxing on 2017/2/27 18:39.
@@ -21,6 +24,8 @@ public class UpdateField implements ISupport{
     public static <T> UpdateField set(@NonNull String name, @NonNull T value) {
         if (value instanceof String) {
             return UpdateField.builder().field(name + "='" + SQLInjectPolicy.transform((String) value) + "'").build();
+        } else if (value instanceof Date) {
+            return UpdateField.builder().field(name + "='" + SqlBuildUtils.TIME_FORMAT.format((Date) value) + "'").build();
         }
         return UpdateField.builder().field(name + "=" + value).build();
     }

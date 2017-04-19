@@ -19,8 +19,8 @@ public class SqlBuildUtils {
     private static final String SEPARATOR_AND = " and ";
     public static final String SEPARATOR_COMMA = ",";
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static final DateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     //======================select fields start=============================//
     public static <T> StringBuilder getFields(T t) {
