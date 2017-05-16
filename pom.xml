@@ -144,7 +144,7 @@
     <snapshotRepository>
       <id>snapshots</id>
       <name>Nexus Snapshots Repository</name>
-      <url>http://10.0.2.101:8081//nexus/content/repositories/snapshots</url>
+      <url>http://10.0.2.101:8081/nexus/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 </project>

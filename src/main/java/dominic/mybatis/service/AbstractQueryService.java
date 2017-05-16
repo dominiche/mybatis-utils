@@ -118,7 +118,7 @@ public abstract class AbstractQueryService<T> {
 
     private SelectSupport getSelectSupport(String columns, String conditions) {
         return SelectSupport.builder()
-                    .selectFields(SqlBuildUtils.getFieldsByClass(clazz).toString())
+                    .selectFields(columns)
                     .tableName(getTableName())
                     .conditions(conditions)
                     .build();

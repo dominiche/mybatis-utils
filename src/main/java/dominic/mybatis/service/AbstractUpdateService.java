@@ -64,6 +64,13 @@ public abstract class AbstractUpdateService<T> {
                 .WHERE(getIdName() + "=" + id);
         return baseUpdateDAO.update(sql.toString());
     }
+    public <R extends Number> int updateById(UpdateFields updateFields, R id) {
+        SQL sql = new SQL();
+        sql.UPDATE(getTableName())
+                .SET(updateFields.SQL())
+                .WHERE(getIdName() + "=" + id);
+        return baseUpdateDAO.update(sql.toString());
+    }
 
     public <R extends Number> int updateById(String updateFields, R id) {
         String sql = "UPDATE " + getTableName() + " SET " + updateFields + " where " + getIdName() + "=" + id;
