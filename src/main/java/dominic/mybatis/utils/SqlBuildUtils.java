@@ -89,6 +89,18 @@ public class SqlBuildUtils {
         }
     }
 
+    public static String doUnderscoreToCamelCase(String fieldName) {
+        StringBuilder sb = new StringBuilder(fieldName.length());
+        String[] fields = fieldName.split("_");
+        String temp;
+        sb.append(fields[0]);
+        for (int i = 1; i < fields.length; i++) {
+            temp = fields[i].trim();
+            sb.append(temp.substring(0, 1).toUpperCase()).append(temp.substring(1));
+        }
+        return sb.toString();
+    }
+
     /**
      * 是否开启了驼峰转下划线
      */

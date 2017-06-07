@@ -9,6 +9,7 @@ import dominic.mybatis.support.UpdateField;
 import dominic.mybatis.support.build.UpdateSupport;
 import dominic.mybatis.support.stream.Restrictions;
 import dominic.mybatis.support.stream.UpdateFields;
+import dominic.mybatis.utils.SqlBuildUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.jdbc.SQL;
@@ -77,6 +78,7 @@ public abstract class AbstractUpdateService<T> {
         return baseUpdateDAO.update(sql);
     }
     //todo 优化，这里调用时有点迷糊
+    //todo 处理泛型中集合类型
     public <R extends Number> int updateById(String updateFields, Collection<R> ids) {
         String sql = "UPDATE " + getTableName() + " SET " + updateFields + " where " + Restriction.in(getIdName(), ids).SQL();
         return baseUpdateDAO.update(sql);
@@ -108,7 +110,7 @@ public abstract class AbstractUpdateService<T> {
         IdContainer idContainer = new IdContainer();
         int result = baseUpdateDAO.insert(t, idContainer, getIdName(), getTableName());
         try {
-            Field idField = t.getClass().getDeclaredField(getIdName());
+            Field idField = t.getClass().getDeclaredField(SqlBuildUtils.doUnderscoreToCamelCase(getIdName()));
             idField.setAccessible(true);
             if (idField.getGenericType().toString().equals(
                     "class java.lang.Integer")) {

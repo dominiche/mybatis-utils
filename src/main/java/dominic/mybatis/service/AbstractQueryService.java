@@ -4,10 +4,10 @@ import dominic.mybatis.annotation.IdName;
 import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.bean.PageParam;
 import dominic.mybatis.dao.query.BaseQueryDAO;
-import dominic.mybatis.support.*;
+import dominic.mybatis.support.OrderSupport;
+import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.appender.OrderSupportAppender;
 import dominic.mybatis.support.build.ISelectSupport;
-import dominic.mybatis.support.build.JoinSelectSupport;
 import dominic.mybatis.support.build.SelectSupport;
 import dominic.mybatis.support.stream.Restrictions;
 import dominic.mybatis.utils.SqlBuildUtils;
@@ -110,8 +110,9 @@ public abstract class AbstractQueryService<T> {
         return list;
     }
 
-    public <R> T queryUnique(@NonNull String column, @NonNull R columnValue) {
-        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), Restriction.eq(column, columnValue).SQL());
+    public <R> T queryUnique(@NonNull String conditionColumn, @NonNull R conditionColumnValue) {
+        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(),
+                Restriction.eq(conditionColumn, conditionColumnValue).SQL());
         HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
