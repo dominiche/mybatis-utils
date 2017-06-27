@@ -5,9 +5,9 @@ import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.bean.IdContainer;
 import dominic.mybatis.dao.update.BaseUpdateDAO;
 import dominic.mybatis.support.Restriction;
+import dominic.mybatis.support.RestrictionUnit;
 import dominic.mybatis.support.UpdateFieldUnit;
 import dominic.mybatis.support.build.UpdateSupport;
-import dominic.mybatis.support.stream.Restrictions;
 import dominic.mybatis.utils.SqlBuildUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +86,7 @@ public abstract class AbstractUpdateService<T> {
         return baseUpdateDAO.update(updateSupport.SQL());
     }
 
-    public int update(UpdateFieldUnit updateFieldUnit, Restrictions restrictions) {
+    public int update(UpdateFieldUnit updateFieldUnit, RestrictionUnit restrictions) {
         UpdateSupport updateSupport = UpdateSupport.builder()
                 .updateFields(updateFieldUnit.SQL())
                 .tableName(getTableName())

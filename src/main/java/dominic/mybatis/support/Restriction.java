@@ -17,7 +17,7 @@ import static dominic.mybatis.utils.SqlBuildUtils.isFirstAndAppend;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Restriction implements SupportUnit {
+public class Restriction implements RestrictionUnit {
     private String condition;
 
     public static <T> Restriction eq(String name, @NonNull T value) {

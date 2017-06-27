@@ -6,10 +6,10 @@ import dominic.mybatis.bean.PageParam;
 import dominic.mybatis.dao.query.BaseQueryDAO;
 import dominic.mybatis.support.OrderSupport;
 import dominic.mybatis.support.Restriction;
+import dominic.mybatis.support.RestrictionUnit;
 import dominic.mybatis.support.appender.OrderSupportAppender;
-import dominic.mybatis.support.build.SelectSupportUnit;
 import dominic.mybatis.support.build.SelectSupport;
-import dominic.mybatis.support.stream.Restrictions;
+import dominic.mybatis.support.build.SelectSupportUnit;
 import dominic.mybatis.utils.SqlBuildUtils;
 import dominic.mybatis.utils.TransformUtils;
 import lombok.Getter;
@@ -87,12 +87,12 @@ public abstract class AbstractQueryService<T> {
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
-    public List<T> query(@NonNull Restrictions restrictions) {
+    public List<T> query(@NonNull RestrictionUnit restrictions) {
         SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), restrictions.SQL());
         return queryBySql(support.SQL());
     }
 
-    public List<T> query(@NonNull String customColumns,@NonNull Restrictions restrictions) {
+    public List<T> query(@NonNull String customColumns,@NonNull RestrictionUnit restrictions) {
         SelectSupport support = getSelectSupport(customColumns, restrictions.SQL());
         return queryBySql(support.SQL());
     }
@@ -125,13 +125,13 @@ public abstract class AbstractQueryService<T> {
                     .build();
     }
 
-    public T queryUnique(@NonNull Restrictions restrictions) {
+    public T queryUnique(@NonNull RestrictionUnit restrictions) {
         SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), restrictions.SQL());
         HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
 
-    public <R> R querySingleValue(@NonNull String column, @NonNull Class<R> singleValueType, @NonNull Restrictions restrictions) {
+    public <R> R querySingleValue(@NonNull String column, @NonNull Class<R> singleValueType, @NonNull RestrictionUnit restrictions) {
         SelectSupport support = getSelectSupport(column, restrictions.SQL());
         return baseQueryDAO.querySingleValueBySql(support.SQL(), singleValueType);
     }
