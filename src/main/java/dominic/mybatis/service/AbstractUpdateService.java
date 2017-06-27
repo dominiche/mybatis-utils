@@ -5,10 +5,9 @@ import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.bean.IdContainer;
 import dominic.mybatis.dao.update.BaseUpdateDAO;
 import dominic.mybatis.support.Restriction;
-import dominic.mybatis.support.UpdateField;
+import dominic.mybatis.support.UpdateFieldUnit;
 import dominic.mybatis.support.build.UpdateSupport;
 import dominic.mybatis.support.stream.Restrictions;
-import dominic.mybatis.support.stream.UpdateFields;
 import dominic.mybatis.utils.SqlBuildUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -53,32 +52,31 @@ public abstract class AbstractUpdateService<T> {
     /**
      * 主键支持泛型
      * 主键名不是id的请在entity上加IdName注解
-     * @param updateField
      * @param id
      * @param <R>
      * @return
      */
-    public <R extends Number> int updateById(UpdateField updateField, R id) {
+    public <R extends Number> int updateById(UpdateFieldUnit updateFieldUnit, R id) {
         SQL sql = new SQL();
         sql.UPDATE(getTableName())
-                .SET(updateField.getField())
+                .SET(updateFieldUnit.SQL())
                 .WHERE(getIdName() + "=" + id);
         return baseUpdateDAO.update(sql.toString());
     }
-    public <R extends Number> int updateById(UpdateFields updateFields, R id) {
+    public <R extends Number> int updateById(UpdateFieldUnit updateFieldUnit, Collection<R> ids) {
         SQL sql = new SQL();
         sql.UPDATE(getTableName())
-                .SET(updateFields.SQL())
-                .WHERE(getIdName() + "=" + id);
+                .SET(updateFieldUnit.SQL())
+                .WHERE(Restriction.in(getIdName(), ids).SQL());
         return baseUpdateDAO.update(sql.toString());
     }
 
+    @Deprecated
     public <R extends Number> int updateById(String updateFields, R id) {
         String sql = "UPDATE " + getTableName() + " SET " + updateFields + " where " + getIdName() + "=" + id;
         return baseUpdateDAO.update(sql);
     }
-    //todo 优化，这里调用时有点迷糊
-    //todo 处理泛型中集合类型
+    @Deprecated
     public <R extends Number> int updateById(String updateFields, Collection<R> ids) {
         String sql = "UPDATE " + getTableName() + " SET " + updateFields + " where " + Restriction.in(getIdName(), ids).SQL();
         return baseUpdateDAO.update(sql);
@@ -88,9 +86,9 @@ public abstract class AbstractUpdateService<T> {
         return baseUpdateDAO.update(updateSupport.SQL());
     }
 
-    public int update(UpdateFields updateFields, Restrictions restrictions) {
+    public int update(UpdateFieldUnit updateFieldUnit, Restrictions restrictions) {
         UpdateSupport updateSupport = UpdateSupport.builder()
-                .updateFields(updateFields.SQL())
+                .updateFields(updateFieldUnit.SQL())
                 .tableName(getTableName())
                 .conditions(restrictions.SQL())
                 .build();

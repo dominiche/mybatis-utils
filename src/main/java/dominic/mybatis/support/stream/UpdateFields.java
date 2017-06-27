@@ -1,13 +1,13 @@
 package dominic.mybatis.support.stream;
 
-import dominic.mybatis.support.SupportUnit;
 import dominic.mybatis.support.UpdateField;
+import dominic.mybatis.support.UpdateFieldUnit;
 import dominic.mybatis.support.appender.UpdateFieldAppender;
 
 /**
  * Created by Administrator:herongxing on 2017/4/18 16:21.
  */
-public class UpdateFields implements SupportUnit {
+public class UpdateFields implements UpdateFieldUnit {
 
     private UpdateFieldAppender appender;
 
