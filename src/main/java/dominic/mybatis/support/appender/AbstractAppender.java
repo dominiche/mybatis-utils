@@ -1,7 +1,7 @@
 package dominic.mybatis.support.appender;
 
 
-import dominic.mybatis.support.ISupport;
+import dominic.mybatis.support.SupportUnit;
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -12,7 +12,7 @@ import java.util.List;
  * Created by herongxing on 2017/2/28 14:39.
  */
 @Data
-public abstract class AbstractAppender<T extends ISupport> implements ISupport {
+public abstract class AbstractAppender<T extends SupportUnit> implements SupportUnit {
     public static final String COMMA = ",";
     public static final String SPACE = " ";
     public static final String AND = " and ";

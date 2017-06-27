@@ -1,6 +1,6 @@
 package dominic.mybatis.support.stream;
 
-import dominic.mybatis.support.ISupport;
+import dominic.mybatis.support.SupportUnit;
 import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.appender.RestrictionAppender;
 
@@ -9,7 +9,7 @@ import java.util.Collection;
 /**
  * Created by Administrator:herongxing on 2017/4/18 16:21.
  */
-public class Restrictions implements ISupport{
+public class Restrictions implements SupportUnit {
 
     private RestrictionAppender appender;
 

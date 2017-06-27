@@ -6,7 +6,7 @@ import lombok.Data;
  * Created by herongxing on 2017/2/28 14:26.
  */
 @Data
-public class TableSupport implements ISupport {
+public class TableSupport implements SupportUnit {
     /**
      * 表名
      */

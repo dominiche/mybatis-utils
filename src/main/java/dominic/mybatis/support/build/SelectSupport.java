@@ -4,7 +4,6 @@ import dominic.mybatis.bean.PageParam;
 import com.google.common.base.Preconditions;
 import dominic.mybatis.support.OrderSupport;
 import dominic.mybatis.support.appender.AbstractAppender;
-import dominic.mybatis.support.build.ISelectSupport;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +17,7 @@ import org.apache.commons.lang.StringUtils;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SelectSupport implements ISelectSupport {
+public class SelectSupport implements SelectSupportUnit {
     /**
      * select部分
      */

@@ -6,7 +6,7 @@ import lombok.Data;
  * Created by herongxing on 2017/2/28 15:08.
  */
 @Data
-public class JoinSupport implements ISupport {
+public class JoinSupport implements SupportUnit {
     public static final String INNER_JOIN = "INNER JOIN";
     public static final String LEFT_JOIN = "LEFT JOIN";
     public static final String RIGHT_JOIN = "RIGHT JOIN";

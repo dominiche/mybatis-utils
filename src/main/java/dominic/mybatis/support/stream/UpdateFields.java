@@ -1,17 +1,13 @@
 package dominic.mybatis.support.stream;
 
-import dominic.mybatis.support.ISupport;
-import dominic.mybatis.support.Restriction;
+import dominic.mybatis.support.SupportUnit;
 import dominic.mybatis.support.UpdateField;
-import dominic.mybatis.support.appender.RestrictionAppender;
 import dominic.mybatis.support.appender.UpdateFieldAppender;
-
-import java.util.Collection;
 
 /**
  * Created by Administrator:herongxing on 2017/4/18 16:21.
  */
-public class UpdateFields implements ISupport{
+public class UpdateFields implements SupportUnit {
 
     private UpdateFieldAppender appender;
 

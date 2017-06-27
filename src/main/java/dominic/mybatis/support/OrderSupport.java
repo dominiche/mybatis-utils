@@ -6,7 +6,7 @@ import lombok.Data;
  * Created by herongxing on 2017/2/28 15:08.
  */
 @Data
-public class OrderSupport implements ISupport {
+public class OrderSupport implements SupportUnit {
     public static final String ASC = "ASC";
     public static final String DESC = "DESC";
     /**

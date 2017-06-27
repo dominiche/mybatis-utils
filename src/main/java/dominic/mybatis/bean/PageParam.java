@@ -1,6 +1,6 @@
 package dominic.mybatis.bean;
 
-import dominic.mybatis.support.ISupport;
+import dominic.mybatis.support.SupportUnit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageParam implements ISupport, Serializable{
+public class PageParam implements SupportUnit, Serializable{
     private Integer pageIndex = 0;
     private Integer pageSize = 10;
 

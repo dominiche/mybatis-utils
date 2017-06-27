@@ -7,7 +7,7 @@ import dominic.mybatis.dao.query.BaseQueryDAO;
 import dominic.mybatis.support.OrderSupport;
 import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.appender.OrderSupportAppender;
-import dominic.mybatis.support.build.ISelectSupport;
+import dominic.mybatis.support.build.SelectSupportUnit;
 import dominic.mybatis.support.build.SelectSupport;
 import dominic.mybatis.support.stream.Restrictions;
 import dominic.mybatis.utils.SqlBuildUtils;
@@ -97,8 +97,8 @@ public abstract class AbstractQueryService<T> {
         return queryBySql(support.SQL());
     }
 
-    public List<T> queryBySql(ISelectSupport iSelectSupport) {
-        return queryBySql(iSelectSupport.SQL());
+    public List<T> queryBySql(SelectSupportUnit support) {
+        return queryBySql(support.SQL());
     }
 
     public List<T> queryBySql(@NonNull String sql) {
@@ -168,7 +168,7 @@ public abstract class AbstractQueryService<T> {
         return queryMaxIdLongValue().intValue();
     }
 
-    public long queryCount(ISelectSupport support) {
+    public long queryCount(SelectSupportUnit support) {
         return baseQueryDAO.queryCountBySql(support.countSQL());
     }
 

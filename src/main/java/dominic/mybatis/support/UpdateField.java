@@ -13,7 +13,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateField implements ISupport{
+public class UpdateField implements SupportUnit {
     /**
      * 直接是set的内容，如：
      * status=1
