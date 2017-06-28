@@ -28,13 +28,23 @@ public class Restriction implements RestrictionUnit {
     }
 
     private static String getName(String name) {
+        String result = name;
         String[] split = name.split("\\.");
         if (split.length == 2) {
             //联表的条件，有表别名前缀
-            return split[0] + "." + "`" + split[1] + "`";
+            String prefix = split[0];
+            String realName = split[1];
+            if (realName.startsWith("`")) {
+                result = prefix + "." + realName;
+            } else {
+                result = prefix + "." + "`" + realName + "`";
+            }
         } else {
-            return "`" + name + "`";
+            if (!name.startsWith("`")) {
+                result = "`" + name + "`";
+            }
         }
+        return result;
     }
 
     public static <T> Restriction notEq(String name, @NonNull T value) {
@@ -84,6 +94,8 @@ public class Restriction implements RestrictionUnit {
     public static Restriction dateLe(String name, @NonNull String value) {
         return Restriction.builder().condition(getName(name) + " <='" + SQLInjectPolicy.transform(value) + "'").build();
     }
+
+
 
     public static Restriction greaterEqual(String name, Object value) {
         return getEqualRestriction(name, value, ">=");

@@ -20,6 +20,9 @@ public class Restrictions implements RestrictionUnit {
     public static Restrictions.RestrictionsBuilder builder() {
         return new Restrictions.RestrictionsBuilder();
     }
+    public static Restrictions.RestrictionsBuilder builder(Restrictions restrictions) {
+        return new Restrictions.RestrictionsBuilder(restrictions.appender);
+    }
 
     @Override
     public String SQL() {
@@ -35,6 +38,9 @@ public class Restrictions implements RestrictionUnit {
         private RestrictionAppender appender;
         RestrictionsBuilder() {
             this.appender = RestrictionAppender.newInstance();
+        }
+        RestrictionsBuilder(RestrictionAppender appender) {
+            this.appender = appender;
         }
 
         public Restrictions build() {
