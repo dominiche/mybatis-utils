@@ -2,7 +2,7 @@ package dominic.mybatis.support;
 
 import com.google.common.base.Preconditions;
 import dominic.mybatis.utils.SQLInjectPolicy;
-import dominic.mybatis.utils.SqlBuildUtils;
+import dominic.mybatis.utils.utils.Separator;
 import lombok.*;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -63,7 +63,7 @@ public class Restriction implements RestrictionUnit {
         StringBuilder builder = new StringBuilder(getName(name));
         builder.append(" IN (");
         for (R r : collection) {
-            first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
+            first = isFirstAndAppend(builder, first, Separator.SEPARATOR_COMMA);
             if (isString) {
                 builder.append("'").append(SQLInjectPolicy.transform((String) r)).append("'");
             } else {

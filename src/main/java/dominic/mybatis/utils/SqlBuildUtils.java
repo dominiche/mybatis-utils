@@ -1,27 +1,20 @@
 package dominic.mybatis.utils;
 
-import dominic.mybatis.annotation.*;
+import dominic.mybatis.annotation.ColumnName;
+import dominic.mybatis.annotation.MyTransient;
+import dominic.mybatis.annotation.UseUnderScoreToCamelCase;
 import dominic.mybatis.support.Restriction;
+import dominic.mybatis.utils.utils.Separator;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 
 import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 
 /**
  * Created by herongxing on 2017/2/20 16:28.
  */
 @Slf4j
 public class SqlBuildUtils {
-    private static final String SEPARATOR_AND = " and ";
-    public static final String SEPARATOR_COMMA = ",";
-
-    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-    public static final DateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
     //======================select fields start=============================//
     public static <T> StringBuilder getFields(T t) {
         StringBuilder builder = new StringBuilder();
@@ -31,7 +24,7 @@ public class SqlBuildUtils {
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
-                first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
+                first = isFirstAndAppend(builder, first, Separator.SEPARATOR_COMMA);
                 builder.append(getFieldName(field, isUseUnderscoreToCamelCase));
             }
         }
@@ -121,7 +114,7 @@ public class SqlBuildUtils {
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
-                first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
+                first = isFirstAndAppend(builder, first, Separator.SEPARATOR_COMMA);
                 builder.append(alias).append(".").append(getFieldName(field, isUseUnderscoreToCamelCase));
             }
         }
@@ -135,7 +128,7 @@ public class SqlBuildUtils {
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
-                first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
+                first = isFirstAndAppend(builder, first, Separator.SEPARATOR_COMMA);
                 builder.append(getFieldName(field, isUseUnderscoreToCamelCase));
             }
         }
@@ -149,128 +142,13 @@ public class SqlBuildUtils {
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
             if (!isIgnoreField(field) ){
-                first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
+                first = isFirstAndAppend(builder, first, Separator.SEPARATOR_COMMA);
                 builder.append(alias).append(".").append(getFieldName(field, isUseUnderscoreToCamelCase));
             }
         }
         return builder;
     }
     //======================select fields end=============================//
-
-
-    //======================condition fields start=============================//
-    public static  <T> StringBuilder buildConditions(T t) {
-        return doBuildCondition(t, "");
-    }
-
-    public static  <T> StringBuilder buildConditionsWithAlias(T t, String alias) {
-        return doBuildCondition(t, alias + ".");
-    }
-
-    private static <T> StringBuilder doBuildCondition(T t, String prefix) {
-        StringBuilder builder = new StringBuilder();
-        boolean first = true;
-        Class<?> aClass = t.getClass();
-        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
-        Field[] fields = aClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (!isIgnoreField(field) ){
-                field.setAccessible(true);
-                try {
-                    Object o = field.get(t);
-                    if ( o != null) {
-                        if (o instanceof String) {
-                            String str = (String) o;
-                            if (StringUtils.isNotBlank(str)) {
-                                first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_AND);
-                                builder.append(prefix);
-                                DateCondition dateCondition = field.getAnnotation(DateCondition.class);
-                                if (dateCondition !=null) {
-                                    appendDateCondition(builder, str, dateCondition);
-                                } else {
-                                    builder.append(Restriction.like(getFieldName(field, isUseUnderscoreToCamelCase), str).SQL());
-                                }
-                            }
-                        } else {
-                            first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_AND);
-                            builder.append(prefix);
-                            builder.append(Restriction.eq(getFieldName(field, isUseUnderscoreToCamelCase), o).SQL());
-                        }
-                    }
-                } catch (IllegalAccessException e) {
-                    log.error("buildConditions: get field value exception:", e);
-                }
-
-            }
-        }
-        return builder;
-    }
-
-    private static void appendDateCondition(StringBuilder builder, String str, DateCondition dateCondition) {
-        Date date = DateTime.parse(str).toDate();
-        String columnName = dateCondition.column();
-        DateTypePolicy dateType = dateCondition.dateType();
-        DateRangePolicy range = dateCondition.range();
-        if(dateType == DateTypePolicy.DATE){
-            if(range == DateRangePolicy.BEGIN){
-                String timeStr = DATE_FORMAT.format(date) + " 00:00:00";
-                builder.append(Restriction.dateGe(columnName, timeStr).SQL());
-            }else if(range == DateRangePolicy.END){
-                String timeStr = DATE_FORMAT.format(date) + " 23:59:59";
-                builder.append(Restriction.dateLe(columnName, timeStr).SQL());
-            }
-        }
-        if(dateType == DateTypePolicy.DATE_TIME){
-            String timeStr = TIME_FORMAT.format(date);
-            if(range == DateRangePolicy.BEGIN){
-                builder.append(Restriction.dateGe(columnName, timeStr).SQL());
-            }else if(range == DateRangePolicy.END){
-                builder.append(Restriction.dateLe(columnName, timeStr).SQL());
-            }
-        }
-    }
-
-    @Deprecated
-    public static <T> StringBuilder buildConditionsByMyBatisParam(T t, String param) {
-        StringBuilder builder = new StringBuilder();
-        boolean first = true;
-        Class<?> aClass = t.getClass();
-        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
-        Field[] fields = aClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (!isIgnoreField(field) ){
-                field.setAccessible(true);
-                try {
-                    Object o = field.get(t);
-                    if ( o != null) {
-                        if (o instanceof String) {
-                            first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_AND);
-                            DateCondition dateCondition = field.getAnnotation(DateCondition.class);
-                            if (dateCondition !=null) {
-                                appendDateCondition(builder, (String) o, dateCondition);
-                            } else {
-                                builder.append(getFieldName(field, isUseUnderscoreToCamelCase))
-                                        .append(" like CONCAT(#{").append(param).append(".")
-                                        .append(field.getName())
-                                        .append("}, '%')");
-                            }
-                        } else {
-                            first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_AND);
-                            builder.append(getFieldName(field, isUseUnderscoreToCamelCase))
-                                    .append("=#{").append(param).append(".")
-                                    .append(field.getName())
-                                    .append("}");
-                        }
-                    }
-                } catch (IllegalAccessException e) {
-                    log.error("buildConditionsByMyBatisParam: get field value exception:", e);
-                }
-
-            }
-        }
-        return builder;
-    }
-    //======================condition fields end=============================//
 
 
     public static boolean isFirstAndAppend(StringBuilder builder, boolean first, String separator) {
@@ -324,7 +202,7 @@ public class SqlBuildUtils {
                 try {
                     Object o = field.get(t);
                     if ( o != null) {
-                        first = isFirstAndAppend(builder, first, SqlBuildUtils.SEPARATOR_COMMA);
+                        first = isFirstAndAppend(builder, first, Separator.SEPARATOR_COMMA);
                         builder.append(prefix);
                         builder.append(Restriction.eq(getFieldName(field, isUseUnderscoreToCamelCase), o).SQL());
                     }
