@@ -98,12 +98,12 @@ public abstract class AbstractQueryService<T> {
         return queryBySql(support.SQL());
     }
 
-    public List<T> queryByBean(@NonNull T bean) {
+    public <R> List<T> queryByBean(@NonNull R bean) {
         SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), RestrictionsUtils.buildConditions(bean).SQL());
         return queryBySql(support.SQL());
     }
 
-    public List<T> queryByBean(@NonNull String customColumns, @NonNull T bean) {
+    public <R> List<T> queryByBean(@NonNull String customColumns, @NonNull R bean) {
         SelectSupport support = getSelectSupport(customColumns, RestrictionsUtils.buildConditions(bean).SQL());
         return queryBySql(support.SQL());
     }
