@@ -10,6 +10,7 @@ import dominic.mybatis.support.RestrictionUnit;
 import dominic.mybatis.support.appender.OrderSupportAppender;
 import dominic.mybatis.support.build.SelectSupport;
 import dominic.mybatis.support.build.SelectSupportUnit;
+import dominic.mybatis.utils.RestrictionsUtils;
 import dominic.mybatis.utils.SqlBuildUtils;
 import dominic.mybatis.utils.TransformUtils;
 import lombok.Getter;
@@ -94,6 +95,16 @@ public abstract class AbstractQueryService<T> {
 
     public List<T> query(@NonNull String customColumns,@NonNull RestrictionUnit restrictions) {
         SelectSupport support = getSelectSupport(customColumns, restrictions.SQL());
+        return queryBySql(support.SQL());
+    }
+
+    public List<T> queryByBean(@NonNull T bean) {
+        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), RestrictionsUtils.buildConditions(bean).SQL());
+        return queryBySql(support.SQL());
+    }
+
+    public List<T> queryByBean(@NonNull String customColumns, @NonNull T bean) {
+        SelectSupport support = getSelectSupport(customColumns, RestrictionsUtils.buildConditions(bean).SQL());
         return queryBySql(support.SQL());
     }
 
