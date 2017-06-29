@@ -1,5 +1,6 @@
-package dominic.mybatis.support;
+package dominic.mybatis.support.build;
 
+import dominic.mybatis.support.SupportUnit;
 import lombok.Data;
 
 /**

@@ -2,7 +2,6 @@ package dominic.mybatis.support.build;
 
 import dominic.mybatis.bean.PageParam;
 import com.google.common.base.Preconditions;
-import dominic.mybatis.support.OrderSupport;
 import dominic.mybatis.support.appender.AbstractAppender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

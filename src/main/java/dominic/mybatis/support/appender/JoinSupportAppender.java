@@ -1,6 +1,6 @@
 package dominic.mybatis.support.appender;
 
-import dominic.mybatis.support.JoinSupport;
+import dominic.mybatis.support.build.JoinSupport;
 
 /**
  * Created by herongxing on 2017/2/28 14:31.
