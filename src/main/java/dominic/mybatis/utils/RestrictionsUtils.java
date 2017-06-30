@@ -8,6 +8,7 @@ import dominic.mybatis.constants.StringTypePolicy;
 import dominic.mybatis.support.stream.Restrictions;
 import dominic.mybatis.utils.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
@@ -50,7 +51,9 @@ public class RestrictionsUtils {
                 if (fieldValue instanceof Collection) {
                     //collection
                     Collection collection = (Collection) fieldValue;
-                    builder.in(fieldName, collection);
+                    if (CollectionUtils.isNotEmpty(collection)) {
+                        builder.in(fieldName, collection);
+                    }
                 } else if (fieldValue instanceof String) {
                     //String
                     String str = (String) fieldValue;

@@ -4,11 +4,11 @@ import dominic.mybatis.annotation.IdName;
 import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.bean.PageParam;
 import dominic.mybatis.dao.query.BaseQueryDAO;
-import dominic.mybatis.support.appender.AbstractAppender;
-import dominic.mybatis.support.build.OrderSupport;
 import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.RestrictionUnit;
+import dominic.mybatis.support.appender.AbstractAppender;
 import dominic.mybatis.support.appender.OrderSupportAppender;
+import dominic.mybatis.support.build.OrderSupport;
 import dominic.mybatis.support.build.SelectSupport;
 import dominic.mybatis.support.build.SelectSupportUnit;
 import dominic.mybatis.utils.RestrictionsUtils;
@@ -198,8 +198,8 @@ public abstract class AbstractQueryService<T> {
     }
 
     public <R> long queryCount(@NonNull R bean) {
-        String countSQL = "SELECT COUNT(1) FROM " + tableName + " WHERE " + RestrictionsUtils.buildConditions(bean);
-        return baseQueryDAO.queryCountBySql(countSQL);
+        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), RestrictionsUtils.buildConditions(bean).SQL());
+        return baseQueryDAO.queryCountBySql(support.countSQL());
     }
 
     public long queryCount(String sql) {
