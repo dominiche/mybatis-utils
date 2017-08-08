@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -58,7 +59,9 @@ public abstract class AbstractQueryService<T> {
      * @param idList
      * @param <R>
      * @return
+     * @see AbstractQueryService#queryById(java.util.Collection)
      */
+    @Deprecated
     public <R extends Number> List<T> queryByIdList(List<R> idList) {
         SelectSupport support = SelectSupport.builder()
                 .selectFields(SqlBuildUtils.getFieldsByClass(getClazz()).toString())
@@ -71,6 +74,16 @@ public abstract class AbstractQueryService<T> {
             list = TransformUtils.hashMapToBean(mapList, clazz);
         }
         return list;
+    }
+
+    /**
+     * 根据主键名查询，默认主键名为id，主键名不是id的请在entity上加IdName注解
+     * @param ids
+     * @param <R>
+     * @return
+     */
+    public <R extends Number> List<T> queryById(Collection<R> ids) {
+        return query(Restriction.in(getIdName(), ids));
     }
 
     /**
