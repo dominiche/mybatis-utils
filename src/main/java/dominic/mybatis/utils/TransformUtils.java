@@ -27,8 +27,12 @@ public class TransformUtils {
                 String fieldName = SqlBuildUtils.getFieldNameUnescaped(field, isUseUnderscoreToCamelCase);
                 Object value = map.get(fieldName);
                 if (null != value) {
-                    field.setAccessible(true);
-                    field.set(t, value);
+                    try {
+                        field.setAccessible(true);
+                        field.set(t, value);
+                    } catch (Exception e) {
+                        log.error("为字段{}设值时异常：", field.getName(), e);
+                    }
                 }
             }
             return t;
