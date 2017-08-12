@@ -32,6 +32,9 @@ public class RestrictionsUtils {
 
     private static <T> Restrictions doBuildCondition(T t, String prefix) {
         Restrictions.RestrictionsBuilder builder = Restrictions.builder();
+        if (null == t) {
+            return builder.build();
+        }
         Class<?> aClass = t.getClass();
         boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
         Field[] fields = aClass.getDeclaredFields();
@@ -128,45 +131,4 @@ public class RestrictionsUtils {
             }
         }
     }
-
-//    @Deprecated
-//    public static <T> StringBuilder buildConditionsByMyBatisParam(T t, String param) {
-//        StringBuilder builder = new StringBuilder();
-//        boolean first = true;
-//        Class<?> aClass = t.getClass();
-//        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(aClass);
-//        Field[] fields = aClass.getDeclaredFields();
-//        for (Field field : fields) {
-//            if (!SqlBuildUtils.isIgnoreField(field) ){
-//                field.setAccessible(true);
-//                try {
-//                    Object o = field.get(t);
-//                    if ( o != null) {
-//                        if (o instanceof String) {
-//                            first = SqlBuildUtils.isFirstAndAppend(builder, first, Separator.SEPARATOR_AND);
-//                            DatePolicy datePolicy = field.getAnnotation(DatePolicy.class);
-//                            if (datePolicy !=null) {
-//                                appendDateCondition(builder, (String) o, datePolicy);
-//                            } else {
-//                                builder.append(SqlBuildUtils.getFieldName(field, isUseUnderscoreToCamelCase))
-//                                        .append(" like CONCAT(#{").append(param).append(".")
-//                                        .append(field.getName())
-//                                        .append("}, '%')");
-//                            }
-//                        } else {
-//                            first = SqlBuildUtils.isFirstAndAppend(builder, first, Separator.SEPARATOR_AND);
-//                            builder.append(SqlBuildUtils.getFieldName(field, isUseUnderscoreToCamelCase))
-//                                    .append("=#{").append(param).append(".")
-//                                    .append(field.getName())
-//                                    .append("}");
-//                        }
-//                    }
-//                } catch (IllegalAccessException e) {
-//                    log.error("buildConditionsByMyBatisParam: get field value exception:", e);
-//                }
-//
-//            }
-//        }
-//        return builder;
-//    }
 }
