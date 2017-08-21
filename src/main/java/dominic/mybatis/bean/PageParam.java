@@ -29,24 +29,24 @@ public class PageParam implements SupportUnit, Serializable{
     }
 
     public Integer getPageIndex() {
+        if (null == pageIndex || pageIndex < 0) {
+            pageIndex = 0;
+        }
         return pageIndex;
     }
 
     public void setPageIndex(Integer pageIndex) {
-        if (null == pageIndex || pageIndex < 0) {
-            pageIndex = 0;
-        }
         this.pageIndex = pageIndex;
     }
 
     public Integer getPageSize() {
+        if (null == pageSize || pageSize < 0) {
+            pageSize = 10;
+        }
         return pageSize;
     }
 
     public void setPageSize(Integer pageSize) {
-        if (null == pageSize || pageSize < 0) {
-            pageSize = 10;
-        }
         this.pageSize = pageSize;
     }
 }
