@@ -7,7 +7,6 @@ import dominic.mybatis.annotation.UseUnderScoreToCamelCase;
 import dominic.mybatis.constants.DateRangePolicy;
 import dominic.mybatis.constants.StringTypePolicy;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.Set;
@@ -42,24 +41,20 @@ public class ExchangeBillSearchDTO {
     /**
      * 申请换货单时间：开始区间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DatePolicy(range = DateRangePolicy.BEGIN, column = "create_time")
     private Date applyExchangeStartDate;
     /**
      * 申请换货单时间：结束区间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DatePolicy(range = DateRangePolicy.END, column = "create_time")
     private Date applyExchangeEndDate;
     /**
      * 确认换货时间：开始区间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date finishExchangeStartDate;
     /**
      * 确认换货时间：结束区间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date finishExchangeEndDate;
     /**
      * 状态：1-待审核，2-待换货，3-审核失败，4-已完成
