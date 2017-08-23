@@ -1,10 +1,12 @@
 package dominic.mybatis.provider;
 
+import dominic.mybatis.utils.InsertUtils;
 import dominic.mybatis.utils.SqlBuildUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.jdbc.SQL;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -15,6 +17,7 @@ public class BaseUpdateProvider {
     public static final String UPDATE = "update";
     public static final String SAVE = "save";
     public static final String INSERT = "insert";
+    public static final String INSERT_LIST = "insertList";
     public static final String BEAN = "bean";
 
     /**
@@ -48,6 +51,13 @@ public class BaseUpdateProvider {
         buildValues(bean, "", sql, false);//不需要idName
         log.debug(sql.toString());
         return sql.toString();
+    }
+
+    public String insertList(Map<String, Object> map) {
+        String tableName = (String) map.get("tableName");
+        Object bean = map.get(BaseUpdateProvider.BEAN);
+        Collection collection = (Collection) bean;
+        return InsertUtils.build(tableName, collection);
     }
 
     private <T> void buildValues(T bean, String idName, SQL sql, boolean ignoreId) {

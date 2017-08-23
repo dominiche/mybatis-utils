@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.UpdateProvider;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+
 /**
  * Created by herongxing on 2017/2/27 16:48.
  */
@@ -23,4 +25,7 @@ public interface BaseUpdateDAO {
 
     @InsertProvider(type = BaseUpdateProvider.class, method = BaseUpdateProvider.INSERT)
     <T> int insert(@Param(BaseUpdateProvider.BEAN) T bean, @Param("tableName") String tableName);
+
+    @InsertProvider(type = BaseUpdateProvider.class, method = BaseUpdateProvider.INSERT_LIST)
+    <T> int insertList(@Param(BaseUpdateProvider.BEAN) Collection<T> beans, @Param("tableName") String tableName);
 }

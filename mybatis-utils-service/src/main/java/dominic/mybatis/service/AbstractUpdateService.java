@@ -1,5 +1,6 @@
 package dominic.mybatis.service;
 
+import com.google.common.collect.Lists;
 import dominic.mybatis.annotation.IdName;
 import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.bean.IdContainer;
@@ -13,6 +14,7 @@ import dominic.mybatis.utils.SqlBuildUtils;
 import dominic.mybatis.utils.UpdateFieldsUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -167,10 +169,29 @@ public abstract class AbstractUpdateService<T> {
     }
 
     /**
-     * 不会回填id
-     * @param tList
+     * 不回填id
+     * @param sourceList
      * @return
      */
+    public int insert(List<T> sourceList) {
+        if (CollectionUtils.isEmpty(sourceList)) {
+            return 0;
+        }
+
+        int result = 0;
+        List<List<T>> partitions = Lists.partition(sourceList, 1000);
+        for (List<T> list : partitions) {
+            result += baseUpdateDAO.insertList(list, getTableName());
+        }
+        return result;
+    }
+
+    /**
+     * 不回填id
+     * @param tList
+     * @see AbstractUpdateService#insert(java.util.List)
+     */
+    @Deprecated
     public int insertList(List<T> tList) {
         int result = 0;
         for (T t : tList) {
@@ -178,6 +199,4 @@ public abstract class AbstractUpdateService<T> {
         }
         return result;
     }
-
-    //todo 一个批量insert list的方法
 }
