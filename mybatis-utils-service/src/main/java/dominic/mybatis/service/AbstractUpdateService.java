@@ -126,7 +126,7 @@ public abstract class AbstractUpdateService<T> {
      */
     public int save(T t) {
         IdContainer idContainer = new IdContainer();
-        int result = baseUpdateDAO.insert(t, idContainer, getIdName(), getTableName());
+        int result = baseUpdateDAO.save(t, idContainer, getIdName(), getTableName());
         try {
             Field idField = t.getClass().getDeclaredField(SqlBuildUtils.doUnderscoreToCamelCase(getIdName()));
             idField.setAccessible(true);
@@ -150,7 +150,7 @@ public abstract class AbstractUpdateService<T> {
      * @return
      */
     public int insert(T t) {
-        return baseUpdateDAO.insertWithId(t, getTableName());
+        return baseUpdateDAO.insert(t, getTableName());
     }
 
     /**

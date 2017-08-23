@@ -13,8 +13,8 @@ import java.util.Map;
 @Slf4j
 public class BaseUpdateProvider {
     public static final String UPDATE = "update";
+    public static final String SAVE = "save";
     public static final String INSERT = "insert";
-    public static final String INSERT_WITH_ID = "insertWithId";
     public static final String BEAN = "bean";
 
     /**
@@ -29,7 +29,7 @@ public class BaseUpdateProvider {
         return sql;
     }
 
-    public <T> String insert(Map<String, Object> map) {
+    public String save(Map<String, Object> map) {
         Object bean = map.get(BaseUpdateProvider.BEAN);
         String idName = (String) map.get("idName");
         String tableName = (String) map.get("tableName");
@@ -40,7 +40,7 @@ public class BaseUpdateProvider {
         return sql.toString();
     }
 
-    public <T> String insertWithId(Map<String, Object> map) {
+    public String insert(Map<String, Object> map) {
         Object bean = map.get(BaseUpdateProvider.BEAN);
         String tableName = (String) map.get("tableName");
         SQL sql = new SQL();

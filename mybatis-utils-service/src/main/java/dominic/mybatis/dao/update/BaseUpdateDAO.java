@@ -17,10 +17,10 @@ public interface BaseUpdateDAO {
     int update(@Param("sql") String sql);
 
     @Options(useGeneratedKeys = true, keyProperty = "idContainer.id")
-    @InsertProvider(type = BaseUpdateProvider.class, method = BaseUpdateProvider.INSERT)
-    <T> int insert(@Param(BaseUpdateProvider.BEAN) T bean,
+    @InsertProvider(type = BaseUpdateProvider.class, method = BaseUpdateProvider.SAVE)
+    <T> int save(@Param(BaseUpdateProvider.BEAN) T bean,
                    @Param("idContainer") IdContainer idContainer, @Param("idName") String idName, @Param("tableName") String tableName);
 
-    @InsertProvider(type = BaseUpdateProvider.class, method = BaseUpdateProvider.INSERT_WITH_ID)
-    <T> int insertWithId(@Param(BaseUpdateProvider.BEAN) T bean, @Param("tableName") String tableName);
+    @InsertProvider(type = BaseUpdateProvider.class, method = BaseUpdateProvider.INSERT)
+    <T> int insert(@Param(BaseUpdateProvider.BEAN) T bean, @Param("tableName") String tableName);
 }
