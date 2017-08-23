@@ -4,10 +4,12 @@ import dominic.mybatis.annotation.ColumnName;
 import dominic.mybatis.annotation.MyTransient;
 import dominic.mybatis.annotation.UseUnderScoreToCamelCase;
 import dominic.mybatis.support.Restriction;
+import dominic.mybatis.utils.utils.DateUtils;
 import dominic.mybatis.utils.utils.Separator;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 
 
 /**
@@ -34,6 +36,31 @@ public class SqlBuildUtils {
     public static String getFieldName(Field field, boolean isUseUnderscoreToCamelCase) {
         String name = getFieldNameUnescaped(field, isUseUnderscoreToCamelCase);
         return "`" + name + "`";
+    }
+
+    public static Object getFieldValue(Field field, Object object) {
+        field.setAccessible(true);
+        Object fieldValue = null;
+        try {
+            fieldValue = field.get(object);
+        } catch (IllegalAccessException e) {
+            log.error(String.format("get field '%s' exception: ", field.getName()), e);
+        }
+
+        return fieldValue;
+    }
+
+    public static String getValueString(Object value) {
+        if (null == value) {
+            return "NULL";
+        }
+
+        if (value instanceof String) {
+            return "'" + SQLInjectPolicy.transform((String) value) + "'";
+        } else if (value instanceof Date) {
+            return "'" + DateUtils.TIME_FORMAT.format((Date) value) + "'";
+        }
+        return value.toString();
     }
 
     public static String getFieldNameUnescaped(Field field, boolean isUseUnderscoreToCamelCase) {
