@@ -2,7 +2,6 @@ package dominic.mybatis.provider;
 
 import dominic.mybatis.utils.SqlBuildUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.jdbc.SQL;
 
 import java.lang.reflect.Field;
