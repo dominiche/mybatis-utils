@@ -19,7 +19,7 @@ public class BaseQueryProvider {
      */
     public String queryBySql(Map<String, Object> map) {
         String sql = (String) map.get("sql");
-        log.info(sql);
+        log.debug(sql);
         return sql;
     }
 }

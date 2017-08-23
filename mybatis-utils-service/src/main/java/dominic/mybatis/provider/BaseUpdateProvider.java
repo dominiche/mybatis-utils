@@ -25,7 +25,7 @@ public class BaseUpdateProvider {
      */
     public String update(Map<String, Object> map) {
         String sql = (String) map.get("sql");
-        log.info(sql);
+        log.debug(sql);
         return sql;
     }
 
@@ -36,7 +36,7 @@ public class BaseUpdateProvider {
         SQL sql = new SQL();
         sql.INSERT_INTO(tableName);
         buildValues(bean, idName, sql, true);
-        log.info(sql.toString());
+        log.debug(sql.toString());
         return sql.toString();
     }
 
@@ -46,7 +46,7 @@ public class BaseUpdateProvider {
         SQL sql = new SQL();
         sql.INSERT_INTO(tableName);
         buildValues(bean, "", sql, false);//不需要idName
-        log.info(sql.toString());
+        log.debug(sql.toString());
         return sql.toString();
     }
 
