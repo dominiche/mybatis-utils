@@ -8,8 +8,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>mybatis-utils-service</module>
     <module>mybatis-utils-tool</module>
+    <module>mybatis-utils-service</module>
   </modules>
 
   <name>mybatis-utils</name>
