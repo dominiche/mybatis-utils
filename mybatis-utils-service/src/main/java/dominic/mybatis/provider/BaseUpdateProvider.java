@@ -74,15 +74,13 @@ public class BaseUpdateProvider {
                     continue;
                 }
             }
-            field.setAccessible(true); //可以访问private
-            try {
-                Object value = field.get(bean);
-                if(null != value){
-                    sql.VALUES(SqlBuildUtils.getFieldName(field, isUseUnderscoreToCamelCase), "#{" + BaseUpdateProvider.BEAN +"." + fieldName + "}");
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+
+            Object fieldValue = SqlBuildUtils.getFieldValue(field, bean);
+            if (null == fieldValue && !SqlBuildUtils.isInsertNull(field)) {
+                continue;
             }
+            sql.VALUES(SqlBuildUtils.getFieldName(field, isUseUnderscoreToCamelCase), "#{" + BaseUpdateProvider.BEAN +"." + fieldName + "}");
+
         }
     }
 }

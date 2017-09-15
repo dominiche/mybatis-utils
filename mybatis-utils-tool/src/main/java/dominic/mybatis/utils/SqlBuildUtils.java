@@ -1,6 +1,7 @@
 package dominic.mybatis.utils;
 
 import dominic.mybatis.annotation.ColumnName;
+import dominic.mybatis.annotation.InsertNull;
 import dominic.mybatis.annotation.MyTransient;
 import dominic.mybatis.annotation.UseUnderScoreToCamelCase;
 import dominic.mybatis.support.Restriction;
@@ -203,6 +204,17 @@ public class SqlBuildUtils {
                 field.getType() == byte.class || field.getType() == float.class ||
                 field.getType() == boolean.class || field.getType() == char.class){
             return true;
+        }
+        return false;
+    }
+
+    public static boolean isInsertNull(Field field) {
+        InsertNull insertNull = field.getAnnotation(InsertNull.class);
+        if (null != insertNull) {
+            boolean insertNullValue = insertNull.value();
+            if (insertNullValue) {
+                return true;
+            }
         }
         return false;
     }

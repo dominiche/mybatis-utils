@@ -34,5 +34,8 @@ public class InsertUtilsTest {
                 .build();
         String sql = InsertUtils.build(Lists.newArrayList(dto, dto2, dto3));
         System.out.println(sql);
+
+        String sql2 = InsertUtils.build(dto3);
+        System.out.println(sql2);
     }
 }

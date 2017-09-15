@@ -10,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Administrator:herongxing on 2017/8/23 17:19.
@@ -20,15 +21,12 @@ public class InsertUtils {
     public static <T> String build(@NonNull String tableName, @NonNull T t) {
         Preconditions.checkArgument(null != t, "bean can not be null!");
 
-        StringBuilder builder = new StringBuilder("INSERT INTO ");
-        builder.append(tableName);
-
         if (t instanceof Collection) {
             Collection collection = (Collection) t;
-            return doBuild(builder, collection);
+            return buildCollection(collection, tableName);
 
         } else {
-            return doBuild(builder, Lists.newArrayList(t));
+            return buildSingle(t, tableName, Lists.newArrayList()).toString();
         }
     }
 
@@ -51,52 +49,64 @@ public class InsertUtils {
         return build(tableName, t);
     }
 
-    private static String doBuild(StringBuilder builder, Collection collection) {
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(collection), "collection can not be empty!");
-        boolean firstBean = true;
-        StringBuilder values = new StringBuilder(" VALUES ");
-        builder.append("(");
-        for (Object object : collection) {
-            if (null == object) {
+    private static StringBuilder buildSingle(Object object, String tableName, List<Field> fieldNameList) {
+        StringBuilder builder = new StringBuilder("");
+        if (null == object) {
+            return builder;
+        }
+
+        builder.append("INSERT INTO ").append(tableName).append("(");
+        Class<?> tClass = object.getClass();
+        boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(tClass);
+        Field[] fields = tClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (SqlBuildUtils.isIgnoreField(field)) {
+                continue;
+            }
+            Object fieldValue = SqlBuildUtils.getFieldValue(field, object);
+            if (null == fieldValue && !SqlBuildUtils.isInsertNull(field)) {
                 continue;
             }
 
-            Class<?> tClass = object.getClass();
-            if (!firstBean) {
-                values.append(Separator.SEPARATOR_COMMA);//if not the first bean values add Separator.SEPARATOR_COMMA
-            }
-            values.append("(");
-
-            boolean firstField = true;
-            boolean isUseUnderscoreToCamelCase = SqlBuildUtils.isUseUnderscoreToCamelCase(tClass);
-            Field[] fields = tClass.getDeclaredFields();
-            for (Field field : fields) {
-                if (!SqlBuildUtils.isIgnoreField(field) ){
-                    if (firstBean) {
-                        if (!firstField) {
-                            builder.append(Separator.SEPARATOR_COMMA);
-                        }
-                        builder.append(SqlBuildUtils.getFieldName(field, isUseUnderscoreToCamelCase));
-                    }
-
-                    if (!firstField) {
-                        values.append(Separator.SEPARATOR_COMMA);
-                    }
-                    Object fieldValue = SqlBuildUtils.getFieldValue(field, object);
-                    if (fieldValue instanceof Collection) {
-                        throw new RuntimeException("insert 不支持bean的字段值为集合类型");
-                    }
-                    values.append(SqlBuildUtils.getValueString(fieldValue));
-                    firstField = false;
-                }
-            }
-            values.append(")");
-
-            firstBean = false;
+            fieldNameList.add(field);
+            builder.append(SqlBuildUtils.getFieldName(field, isUseUnderscoreToCamelCase));
+            builder.append(Separator.SEPARATOR_COMMA);
         }
+        builder.deleteCharAt(builder.length()-1);//remove redundant comma
         builder.append(")");
-        builder.append(" ").append(values);
 
+        builder.append(" VALUES ");
+        buildValues(object, fieldNameList, builder);
+
+        return builder;
+    }
+
+    private static void buildValues(Object object, List<Field> fieldNameList, StringBuilder builder) {
+        builder.append("( ");
+        for (Field field : fieldNameList) {
+            Object fieldValue = SqlBuildUtils.getFieldValue(field, object);
+            if (fieldValue instanceof Collection) {
+                throw new RuntimeException("insert 不支持bean的字段值为集合类型");
+            }
+            builder.append(SqlBuildUtils.getValueString(fieldValue));
+            builder.append(Separator.SEPARATOR_COMMA);
+        }
+        builder.deleteCharAt(builder.length()-1);//remove redundant comma
+        builder.append(")");
+    }
+
+    private static String buildCollection(Collection collection, String tableName) {
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(collection), "collection can not be empty!");
+        List<Field> fieldNameList = Lists.newArrayList();
+        StringBuilder builder = new StringBuilder();
+        for (Object object : collection) {
+            if (CollectionUtils.isEmpty(fieldNameList)) {
+                builder = buildSingle(object, tableName, fieldNameList);
+            } else {
+                builder.append(Separator.SEPARATOR_COMMA);
+                buildValues(object, fieldNameList, builder);
+            }
+        }
         return builder.toString();
     }
 }
