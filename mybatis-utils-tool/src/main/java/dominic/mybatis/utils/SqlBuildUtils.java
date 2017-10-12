@@ -209,14 +209,16 @@ public class SqlBuildUtils {
     }
 
     public static boolean isInsertNull(Field field) {
+        return isInsertNull(field, false);
+    }
+
+    public static boolean isInsertNull(Field field, boolean defaultInsertNull) {
         InsertNull insertNull = field.getAnnotation(InsertNull.class);
         if (null != insertNull) {
-            boolean insertNullValue = insertNull.value();
-            if (insertNullValue) {
-                return true;
-            }
+            return insertNull.value();
+        } else {
+            return defaultInsertNull;
         }
-        return false;
     }
 
 

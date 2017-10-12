@@ -18,6 +18,14 @@ import java.util.List;
 @Slf4j
 public class InsertUtils {
 
+    /**对注解InsertNull的支持不同：
+     * （1）T是普通bean：没有注解InsertNull，默认是不插入null值的（注解InsertNull本来含义是如此）
+     * （2）T是Collection：没有注解InsertNull，默认是插入null值的
+     * @param tableName
+     * @param t
+     * @param <T>
+     * @return
+     */
     public static <T> String build(@NonNull String tableName, @NonNull T t) {
         Preconditions.checkArgument(null != t, "bean can not be null!");
 
@@ -26,7 +34,7 @@ public class InsertUtils {
             return buildCollection(collection, tableName);
 
         } else {
-            return buildSingle(t, tableName, Lists.newArrayList()).toString();
+            return buildSingle(t, tableName, Lists.newArrayList(), false).toString();
         }
     }
 
@@ -49,7 +57,7 @@ public class InsertUtils {
         return build(tableName, t);
     }
 
-    private static StringBuilder buildSingle(Object object, String tableName, List<Field> fieldNameList) {
+    private static StringBuilder buildSingle(Object object, String tableName, List<Field> fieldNameList, boolean defaultInsertNull) {
         StringBuilder builder = new StringBuilder("");
         if (null == object) {
             return builder;
@@ -64,7 +72,7 @@ public class InsertUtils {
                 continue;
             }
             Object fieldValue = SqlBuildUtils.getFieldValue(field, object);
-            if (null == fieldValue && !SqlBuildUtils.isInsertNull(field)) {
+            if (null == fieldValue && !SqlBuildUtils.isInsertNull(field, defaultInsertNull)) {
                 continue;
             }
 
@@ -101,7 +109,7 @@ public class InsertUtils {
         StringBuilder builder = new StringBuilder();
         for (Object object : collection) {
             if (CollectionUtils.isEmpty(fieldNameList)) {
-                builder = buildSingle(object, tableName, fieldNameList);
+                builder = buildSingle(object, tableName, fieldNameList, true);
             } else {
                 builder.append(Separator.SEPARATOR_COMMA);
                 buildValues(object, fieldNameList, builder);
