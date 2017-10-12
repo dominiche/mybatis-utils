@@ -170,10 +170,6 @@ public abstract class AbstractUpdateService<T> {
 
     /**
      * 不回填id
-     * 注意：为了插入list时不损失信息，该方法会对注解InsertNull做特殊处理，即如果没有注解InsertNull，则默认是插入null值的
-     * 即：
-     * （1）insert(T t)方法：没有注解InsertNull，默认是不插入null值的（注解InsertNull本来含义是如此）
-     * （2）insert(List<T> sourceList)方法：没有注解InsertNull，默认是插入null值的
      */
     public int insert(List<T> sourceList) {
         if (CollectionUtils.isEmpty(sourceList)) {

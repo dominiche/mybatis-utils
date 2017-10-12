@@ -209,10 +209,10 @@ public class SqlBuildUtils {
     }
 
     public static boolean isInsertNull(Field field) {
-        return isInsertNull(field, false);
+        return isInsertNull(field, true);//默认null值插入null
     }
 
-    public static boolean isInsertNull(Field field, boolean defaultInsertNull) {
+    private static boolean isInsertNull(Field field, boolean defaultInsertNull) {
         InsertNull insertNull = field.getAnnotation(InsertNull.class);
         if (null != insertNull) {
             return insertNull.value();
