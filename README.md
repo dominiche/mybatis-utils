@@ -5,7 +5,9 @@
 
 
 ###版本更新日志：
-
+####1.3.3: 修改null值插入的处理方式
+    没有InsertNull注解时，默认处理方式改为null值插入为NULL(之前是null值忽略)，
+    如果某字段为not null，但是数据库会给默认值，则bean的该字段值可以为nul但要加上注解InsertNull(false)
 ####1.3.1:
     修复dominic.mybatis.service.AbstractUpdateService.insert(java.util.List<T>)对字段NULL值插入null，而表中该字段是not null但有默认值的情况：
         添加InsertNull注解，默认不插入null的字段，如果需要可以加上该注解
