@@ -1,7 +1,9 @@
 package dominic.test;
 
 import com.google.common.collect.Lists;
+import dominic.mybatis.support.stream.UpdateFields;
 import dominic.mybatis.utils.InsertUtils;
+import dominic.mybatis.utils.UpdateFieldsUtils;
 import dominic.test.dto.LsConfig;
 import org.junit.Test;
 
@@ -37,5 +39,18 @@ public class InsertUtilsTest {
 
         String sql2 = InsertUtils.build(dto3);
         System.out.println(sql2);
+    }
+
+    @Test
+    public void testNullUpdateByBean() {
+        LsConfig dto2 = LsConfig.builder()
+//                .id(123)
+                .name("----test--------")
+//                .description("description test")
+                .key("TEST-2")
+                .value("VALUE-2")
+                .build();
+        UpdateFields fields = UpdateFieldsUtils.buildUpdateFields(dto2);
+        System.out.println(fields.SQL());
     }
 }

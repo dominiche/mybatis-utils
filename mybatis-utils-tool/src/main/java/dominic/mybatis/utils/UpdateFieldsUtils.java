@@ -38,7 +38,7 @@ public class UpdateFieldsUtils {
             field.setAccessible(true);
             try {
                 Object fieldValue = field.get(t);
-                if (null == fieldValue) {
+                if (null == fieldValue && !SqlBuildUtils.isInsertNull(field)) {
                     continue;
                 }
 

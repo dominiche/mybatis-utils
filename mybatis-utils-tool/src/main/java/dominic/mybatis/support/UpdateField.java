@@ -21,7 +21,7 @@ public class UpdateField implements UpdateFieldUnit {
      */
     private String field;
 
-    public static <T> UpdateField set(@NonNull String name, @NonNull T value) {
+    public static <T> UpdateField set(@NonNull String name, T value) {
         if (value instanceof String) {
             return UpdateField.builder().field(name + "='" + SQLInjectPolicy.transform((String) value) + "'").build();
         } else if (value instanceof Date) {

@@ -5,6 +5,9 @@
 
 
 ###版本更新日志：
+####1.4.0: update bean 支持InsertNull注解
+    没有InsertNull注解时，默认处理方式改为null值不处理，需要则加@InsertNull(true)
+
 ####1.3.4: 修改null值插入的处理方式
     没有InsertNull注解时，默认处理方式改为null值不处理，需要则加@InsertNull(true)
 
