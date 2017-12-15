@@ -209,7 +209,7 @@ public class SqlBuildUtils {
     }
 
     public static boolean isInsertNull(Field field) {
-        return isInsertNull(field, true);//默认null值插入null
+        return isInsertNull(field, false);//默认null值不插入null
     }
 
     private static boolean isInsertNull(Field field, boolean defaultInsertNull) {

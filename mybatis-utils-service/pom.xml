@@ -3,7 +3,7 @@
     <parent>
         <artifactId>mybatis-utils</artifactId>
         <groupId>dominic</groupId>
-        <version>1.3.3-SNAPSHOT</version>
+        <version>1.3.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>dominic</groupId>
             <artifactId>mybatis-utils-tool</artifactId>
-            <version>1.3.3-SNAPSHOT</version>
+            <version>1.3.4-SNAPSHOT</version>
         </dependency>
 
         <!-- spring start-->
