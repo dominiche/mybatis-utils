@@ -1,5 +1,7 @@
 package dominic.mybatis.annotation;
 
+import dominic.mybatis.constants.HandleNullScope;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,6 +14,14 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface InsertNull {
+public @interface HandleNull {
+    /**
+     * 是否处理null值
+     */
     boolean value() default true;
+
+    /**
+     * null值处理范围
+     */
+    HandleNullScope scope() default HandleNullScope.ALL;
 }

@@ -1,7 +1,7 @@
 package dominic.test.dto;
 
 import dominic.mybatis.annotation.IdName;
-import dominic.mybatis.annotation.InsertNull;
+import dominic.mybatis.annotation.HandleNull;
 import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.annotation.UseUnderScoreToCamelCase;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ import java.io.Serializable;
 @UseUnderScoreToCamelCase
 public class LsConfig implements Serializable {
 
-	@InsertNull
+	@HandleNull
 	private Integer id;
 
 	private String name;

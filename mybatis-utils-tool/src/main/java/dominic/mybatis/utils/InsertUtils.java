@@ -3,6 +3,7 @@ package dominic.mybatis.utils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import dominic.mybatis.annotation.TableName;
+import dominic.mybatis.constants.HandleNullScope;
 import dominic.mybatis.utils.utils.Separator;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,7 @@ public class InsertUtils {
                 continue;
             }
             Object fieldValue = SqlBuildUtils.getFieldValue(field, object);
-            if (null == fieldValue && !SqlBuildUtils.isInsertNull(field)) {
+            if (null == fieldValue && !SqlBuildUtils.isHandleNull(field, HandleNullScope.INSERT)) {
                 continue;
             }
 

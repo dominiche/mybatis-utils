@@ -5,6 +5,9 @@
 
 
 ###版本更新日志：
+####1.5.0: InsertNull注解改名HandleNull，添加scope（see HandleNullScope）
+    HandleNullScope.ALL 对INSERT、UPDATE、CONDITION都有效，//todo CONDITION有待完善
+    
 ####1.4.0: update bean 支持InsertNull注解
     没有InsertNull注解时，默认处理方式改为null值不处理，需要则加@InsertNull(true)
 

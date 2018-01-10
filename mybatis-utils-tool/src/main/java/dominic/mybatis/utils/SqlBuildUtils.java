@@ -1,9 +1,10 @@
 package dominic.mybatis.utils;
 
 import dominic.mybatis.annotation.ColumnName;
-import dominic.mybatis.annotation.InsertNull;
+import dominic.mybatis.annotation.HandleNull;
 import dominic.mybatis.annotation.MyTransient;
 import dominic.mybatis.annotation.UseUnderScoreToCamelCase;
+import dominic.mybatis.constants.HandleNullScope;
 import dominic.mybatis.support.Restriction;
 import dominic.mybatis.utils.utils.DateUtils;
 import dominic.mybatis.utils.utils.Separator;
@@ -208,17 +209,21 @@ public class SqlBuildUtils {
         return false;
     }
 
-    public static boolean isInsertNull(Field field) {
-        return isInsertNull(field, false);//默认null值不插入null
+    public static boolean isHandleNull(Field field, HandleNullScope handleNullScope) {
+        if (null == handleNullScope) {
+            handleNullScope = HandleNullScope.ALL;
+        }
+        return isHandleNull(field, handleNullScope, false);//默认null值不插入null
     }
 
-    private static boolean isInsertNull(Field field, boolean defaultInsertNull) {
-        InsertNull insertNull = field.getAnnotation(InsertNull.class);
-        if (null != insertNull) {
-            return insertNull.value();
-        } else {
-            return defaultInsertNull;
+    private static boolean isHandleNull(Field field, HandleNullScope handleNullScope, boolean defaultInsertNull) {
+        HandleNull handleNull = field.getAnnotation(HandleNull.class);
+        if (null != handleNull) {
+            if (handleNull.scope() == handleNullScope || HandleNullScope.ALL == handleNull.scope()) {
+                return handleNull.value();
+            }
         }
+        return defaultInsertNull;
     }
 
 

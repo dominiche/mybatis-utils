@@ -16,29 +16,29 @@ public class InsertUtilsTest {
         LsConfig dto = LsConfig.builder()
 //                .id(123)
                 .name("----test--------")
-                .description("description test")
+//                .description("description test")
                 .key("TEST-1")
                 .value("VALUE-1")
                 .build();
         LsConfig dto2 = LsConfig.builder()
 //                .id(123)
                 .name("----test--------")
-                .description("description test")
+//                .description("description test")
                 .key("TEST-2")
                 .value("VALUE-2")
                 .build();
         LsConfig dto3 = LsConfig.builder()
 //                .id(123)
                 .name("----test--------")
-                .description("description test")
+//                .description("description test")
                 .key("TEST-3")
                 .value("VALUE-3")
                 .build();
         String sql = InsertUtils.build(Lists.newArrayList(dto, dto2, dto3));
         System.out.println(sql);
 
-        String sql2 = InsertUtils.build(dto3);
-        System.out.println(sql2);
+//        String sql2 = InsertUtils.build(dto3);
+//        System.out.println(sql2);
     }
 
     @Test

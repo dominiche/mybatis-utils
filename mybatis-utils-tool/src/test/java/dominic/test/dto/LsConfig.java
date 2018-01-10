@@ -1,9 +1,10 @@
 package dominic.test.dto;
 
 import dominic.mybatis.annotation.IdName;
-import dominic.mybatis.annotation.InsertNull;
+import dominic.mybatis.annotation.HandleNull;
 import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.annotation.UseUnderScoreToCamelCase;
+import dominic.mybatis.constants.HandleNullScope;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +33,7 @@ public class LsConfig implements Serializable {
 	/**
 	 * 描述
 	 */
-	@InsertNull
+	@HandleNull(scope = HandleNullScope.INSERT)
 	private String description;
 
 	private String key;

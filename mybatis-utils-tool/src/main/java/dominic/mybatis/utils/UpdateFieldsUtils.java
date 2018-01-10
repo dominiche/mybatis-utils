@@ -1,5 +1,6 @@
 package dominic.mybatis.utils;
 
+import dominic.mybatis.constants.HandleNullScope;
 import dominic.mybatis.support.stream.UpdateFields;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,7 +39,7 @@ public class UpdateFieldsUtils {
             field.setAccessible(true);
             try {
                 Object fieldValue = field.get(t);
-                if (null == fieldValue && !SqlBuildUtils.isInsertNull(field)) {
+                if (null == fieldValue && !SqlBuildUtils.isHandleNull(field, HandleNullScope.UPDATE)) {
                     continue;
                 }
 

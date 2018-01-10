@@ -1,5 +1,6 @@
 package dominic.mybatis.provider;
 
+import dominic.mybatis.constants.HandleNullScope;
 import dominic.mybatis.utils.InsertUtils;
 import dominic.mybatis.utils.SqlBuildUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +77,7 @@ public class BaseUpdateProvider {
             }
 
             Object fieldValue = SqlBuildUtils.getFieldValue(field, bean);
-            if (null == fieldValue && !SqlBuildUtils.isInsertNull(field)) {
+            if (null == fieldValue && !SqlBuildUtils.isHandleNull(field, HandleNullScope.INSERT)) {
                 continue;
             }
             sql.VALUES(SqlBuildUtils.getFieldName(field, isUseUnderscoreToCamelCase), "#{" + BaseUpdateProvider.BEAN +"." + fieldName + "}");
