@@ -1,20 +1,25 @@
 package dominic.mybatis.support.stream;
 
+import com.google.common.collect.Maps;
 import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.RestrictionUnit;
 import dominic.mybatis.support.appender.RestrictionAppender;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Created by Administrator:herongxing on 2017/4/18 16:21.
  */
-public class Restrictions implements RestrictionUnit {
+public class Restrictions extends RestrictionUnit {
 
     private RestrictionAppender appender;
 
     Restrictions(RestrictionAppender appender) {
         this.appender = appender;
+        HashMap<String, Object> hashMap = Maps.newHashMap();
+        appender.getAppenderList().forEach(restriction -> hashMap.putAll(restriction.getParamMap()));
+        setParamMap(hashMap);
     }
 
     public static Restrictions.RestrictionsBuilder builder() {
@@ -56,6 +61,14 @@ public class Restrictions implements RestrictionUnit {
         }
         public <T> Restrictions.RestrictionsBuilder notEq(String name, T value) {
             appender.append(Restriction.notEq(name, value));
+            return this;
+        }
+        public <T> Restrictions.RestrictionsBuilder isNull(String name) {
+            appender.append(Restriction.isNull(name));
+            return this;
+        }
+        public <T> Restrictions.RestrictionsBuilder isNotNull(String name) {
+            appender.append(Restriction.isNotNull(name));
             return this;
         }
         public <T> Restrictions.RestrictionsBuilder in(String name, Collection<T> collection) {

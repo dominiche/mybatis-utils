@@ -1,18 +1,24 @@
 package dominic.mybatis.support.stream;
 
+import com.google.common.collect.Maps;
 import dominic.mybatis.support.UpdateField;
 import dominic.mybatis.support.UpdateFieldUnit;
 import dominic.mybatis.support.appender.UpdateFieldAppender;
 
+import java.util.HashMap;
+
 /**
  * Created by Administrator:herongxing on 2017/4/18 16:21.
  */
-public class UpdateFields implements UpdateFieldUnit {
+public class UpdateFields extends UpdateFieldUnit {
 
     private UpdateFieldAppender appender;
 
     UpdateFields(UpdateFieldAppender appender) {
         this.appender = appender;
+        HashMap<String, Object> hashMap = Maps.newHashMap();
+        appender.getAppenderList().forEach(updateField -> hashMap.putAll(updateField.getParamMap()));
+        setParamMap(hashMap);
     }
 
     public static UpdateFields.UpdateFieldsBuilder builder() {

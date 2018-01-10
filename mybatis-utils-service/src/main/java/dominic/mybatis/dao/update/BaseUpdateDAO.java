@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.UpdateProvider;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by herongxing on 2017/2/27 16:48.
@@ -16,7 +17,12 @@ import java.util.Collection;
 @Repository
 public interface BaseUpdateDAO {
     @UpdateProvider(type = BaseUpdateProvider.class, method = BaseUpdateProvider.UPDATE)
-    int update(@Param("sql") String sql);
+    int update(Map<String, Object> map);
+
+    @UpdateProvider(type = BaseUpdateProvider.class, method = BaseUpdateProvider.UPDATE)
+    int updateBySQL(@Param("sql") String sql);
+
+
 
     @Options(useGeneratedKeys = true, keyProperty = "idContainer.id")
     @InsertProvider(type = BaseUpdateProvider.class, method = BaseUpdateProvider.SAVE)
