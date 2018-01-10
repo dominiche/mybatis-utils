@@ -1,6 +1,7 @@
 package dominic.mybatis.dao.update;
 
 import dominic.mybatis.bean.IdContainer;
+import dominic.mybatis.constants.MybatisUtils;
 import dominic.mybatis.provider.BaseUpdateProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Options;
@@ -20,7 +21,7 @@ public interface BaseUpdateDAO {
     int update(Map<String, Object> map);
 
     @UpdateProvider(type = BaseUpdateProvider.class, method = BaseUpdateProvider.UPDATE)
-    int updateBySQL(@Param("sql") String sql);
+    int updateBySQL(@Param(MybatisUtils.SQL) String sql);
 
 
 

@@ -3,7 +3,6 @@ package dominic.mybatis.support;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import dominic.mybatis.constants.MybatisUtils;
-import dominic.mybatis.utils.SQLInjectPolicy;
 import dominic.mybatis.utils.utils.Separator;
 import lombok.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -95,7 +94,7 @@ public class Restriction extends RestrictionUnit {
         for (R r : collection) {
             first = isFirstAndAppend(builder, first, Separator.SEPARATOR_COMMA);
             String key = name + "_" + count;
-            builder.append(MybatisUtils.segment(key));
+            builder.append(MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, key));
             hashMap.put(key, r);
             ++count;
         }

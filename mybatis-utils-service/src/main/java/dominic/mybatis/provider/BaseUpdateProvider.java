@@ -1,6 +1,7 @@
 package dominic.mybatis.provider;
 
 import dominic.mybatis.constants.HandleNullScope;
+import dominic.mybatis.constants.MybatisUtils;
 import dominic.mybatis.utils.InsertUtils;
 import dominic.mybatis.utils.SqlBuildUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class BaseUpdateProvider {
      * @return
      */
     public String update(Map<String, Object> map) {
-        String sql = (String) map.get("sql");
+        String sql = (String) map.get(MybatisUtils.SQL);
         log.debug(sql);
         return sql;
     }
