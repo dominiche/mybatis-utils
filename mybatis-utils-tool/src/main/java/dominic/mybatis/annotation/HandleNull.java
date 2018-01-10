@@ -21,7 +21,7 @@ public @interface HandleNull {
     boolean value() default true;
 
     /**
-     * null值处理范围
+     * null值处理范围，默认是只处理insert null
      */
-    HandleNullScope scope() default HandleNullScope.ALL;
+    HandleNullScope scope() default HandleNullScope.INSERT;
 }
