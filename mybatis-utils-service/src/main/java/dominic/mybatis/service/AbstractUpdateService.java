@@ -121,7 +121,7 @@ public abstract class AbstractUpdateService<T> {
                 .tableName(getTableName())
                 .conditions(restrictions.SQL())
                 .build();
-        Map<String, Object> map = getParamMap(updateSupport.toString());
+        Map<String, Object> map = getParamMap(updateSupport.SQL());
         map.putAll(updateFieldUnit.getParamMap());
         map.putAll(restrictions.getParamMap());
         return baseUpdateDAO.update(map);

@@ -28,6 +28,11 @@ public class UpdateSupport implements SupportUnit {
     private String conditions;
 
     @Override
+    public String toString() {
+        return SQL();
+    }
+
+    @Override
     public String SQL() {
         Preconditions.checkNotNull(updateFields, "updateFields 不能为空！");
         Preconditions.checkNotNull(tableName, "tableName 不能为空！");

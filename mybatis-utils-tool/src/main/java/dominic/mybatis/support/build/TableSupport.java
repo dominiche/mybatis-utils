@@ -25,6 +25,11 @@ public class TableSupport implements SupportUnit {
     }
 
     @Override
+    public String toString() {
+        return SQL();
+    }
+
+    @Override
     public String SQL() {
         return tableName + " AS " + alias;
     }
