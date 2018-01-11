@@ -5,6 +5,8 @@
 
 
 ###版本更新日志：
+####2.0.0: 2018-1-11 15:10:32 SQL语句拼接预编译参数化改造
+    
 ####1.5.0: InsertNull注解改名HandleNull，添加scope（see HandleNullScope）
     HandleNullScope.ALL 对INSERT、UPDATE、CONDITION都有效，//todo CONDITION有待完善
     
