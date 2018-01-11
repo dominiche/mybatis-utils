@@ -190,7 +190,13 @@ public abstract class AbstractUpdateService<T> {
         int result = 0;
         List<List<T>> partitions = Lists.partition(sourceList, 1000);
         for (List<T> list : partitions) {
-            result += baseUpdateDAO.insertList(list, getTableName());
+            Map<String, Object> map = Maps.newHashMap();
+            map.put(MybatisUtils.TABLE_NAME, getTableName());
+            map.put(MybatisUtils.BEAN_NAME, list);
+            for (int i=0; i<list.size(); ++i) {
+                map.put(MybatisUtils.wrapBeanName(i), list.get(i));
+            }
+            result += baseUpdateDAO.insertList(map);
         }
         return result;
     }

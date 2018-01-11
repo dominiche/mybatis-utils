@@ -56,9 +56,8 @@ public class BaseUpdateProvider {
     }
 
     public String insertList(Map<String, Object> map) {
-        String tableName = (String) map.get("tableName");
-        Object bean = map.get(BaseUpdateProvider.BEAN);
-        Collection collection = (Collection) bean;
+        String tableName = (String) map.get(MybatisUtils.TABLE_NAME);
+        Collection collection = (Collection) map.get(MybatisUtils.BEAN_NAME);
         return InsertUtils.build(tableName, collection);
     }
 
