@@ -27,6 +27,10 @@ public interface MybatisUtils {
         return String.format("#{%s}", prefix + "_" + name);
     }
 
+    static String keyName(String prefix, String name) {
+        return prefix + "_" + name;
+    }
+
     String UPDATE_SEGMENT_PREFIX = "update";
     String CONDITION_SEGMENT_PREFIX = "condition";
 }

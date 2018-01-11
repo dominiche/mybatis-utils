@@ -25,7 +25,7 @@ public class PageParam implements SupportUnit, Serializable{
     }
 
     public Integer getPageStart() {
-        return pageIndex*pageSize;
+        return getPageIndex()*getPageSize();
     }
 
     public Integer getPageIndex() {

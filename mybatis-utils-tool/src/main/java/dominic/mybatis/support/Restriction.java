@@ -30,7 +30,7 @@ public class Restriction extends RestrictionUnit {
 
     private static <T> void buildParamMap(String name, @NonNull T value, Restriction build) {
         HashMap<String, Object> hashMap = Maps.newHashMap();
-        hashMap.put(name, value);
+        hashMap.put(MybatisUtils.keyName(MybatisUtils.CONDITION_SEGMENT_PREFIX, name), value);
         build.setParamMap(hashMap);
     }
 
@@ -95,7 +95,7 @@ public class Restriction extends RestrictionUnit {
             first = isFirstAndAppend(builder, first, Separator.SEPARATOR_COMMA);
             String key = name + "_" + count;
             builder.append(MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, key));
-            hashMap.put(key, r);
+            hashMap.put(MybatisUtils.keyName(MybatisUtils.CONDITION_SEGMENT_PREFIX, key), r);
             ++count;
         }
         builder.append(")");
@@ -104,18 +104,6 @@ public class Restriction extends RestrictionUnit {
         build.setParamMap(hashMap);
         return build;
     }
-
-//    @Deprecated
-//    public static Restriction dateGe(String name, @NonNull String value) {
-//        return Restriction.builder().condition(getName(name) + " >='" + SQLInjectPolicy.transform(value) + "'").build();
-//    }
-//
-//    @Deprecated
-//    public static Restriction dateLe(String name, @NonNull String value) {
-//        return Restriction.builder().condition(getName(name) + " <='" + SQLInjectPolicy.transform(value) + "'").build();
-//    }
-
-
 
     public static Restriction greaterEqual(String name, Object value) {
         return getEqualRestriction(name, value, ">=");

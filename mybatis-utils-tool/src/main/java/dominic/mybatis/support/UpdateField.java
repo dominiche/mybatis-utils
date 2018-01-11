@@ -27,7 +27,7 @@ public class UpdateField extends UpdateFieldUnit {
         String field = name + "=" + MybatisUtils.segment(MybatisUtils.UPDATE_SEGMENT_PREFIX, name);
         UpdateField build = UpdateField.builder().field(field).build();
         HashMap<String, Object> hashMap = Maps.newHashMap();
-        hashMap.put(name, value);
+        hashMap.put(MybatisUtils.keyName(MybatisUtils.UPDATE_SEGMENT_PREFIX, name), value);
         build.setParamMap(hashMap);
         return build;
     }
