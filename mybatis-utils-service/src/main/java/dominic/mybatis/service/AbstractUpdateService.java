@@ -75,12 +75,6 @@ public abstract class AbstractUpdateService<T> {
         return baseUpdateDAO.update(map);
     }
 
-    private Map<String, Object> getParamMap(String sql) {
-        Map<String, Object> map = Maps.newHashMap();
-        map.put(MybatisUtils.SQL, sql);
-        return map;
-    }
-
     public <R extends Number> int updateById(UpdateFieldUnit updateFieldUnit, Collection<R> ids) {
         SQL sql = new SQL();
         Restriction restriction = Restriction.in(getIdName(), ids);
@@ -97,11 +91,21 @@ public abstract class AbstractUpdateService<T> {
         UpdateFieldUnit updateField = UpdateField.setBySql(updateFields);
         return updateById(updateField, id);
     }
+
     @Deprecated
     public <R extends Number> int updateById(String updateFields, Collection<R> ids) {
         UpdateFieldUnit updateField = UpdateField.setBySql(updateFields);
         return updateById(updateField, ids);
     }
+
+
+    private Map<String, Object> getParamMap(String sql) {
+        Map<String, Object> map = Maps.newHashMap();
+        map.put(MybatisUtils.SQL, sql);
+        return map;
+    }
+
+
     @Deprecated
     public int update(UpdateSupport updateSupport) {
         return baseUpdateDAO.updateBySQL(updateSupport.SQL());

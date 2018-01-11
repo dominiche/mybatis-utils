@@ -58,7 +58,9 @@ public class BaseUpdateProvider {
     public String insertList(Map<String, Object> map) {
         String tableName = (String) map.get(MybatisUtils.TABLE_NAME);
         Collection collection = (Collection) map.get(MybatisUtils.BEAN_NAME);
-        return InsertUtils.build(tableName, collection);
+        String sql = InsertUtils.build(tableName, collection);
+        log.debug(sql);
+        return sql;
     }
 
     private <T> void buildValues(T bean, String idName, SQL sql, boolean ignoreId) {
