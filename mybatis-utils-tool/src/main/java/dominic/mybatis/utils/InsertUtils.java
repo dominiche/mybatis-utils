@@ -71,7 +71,7 @@ public class InsertUtils {
                 continue;
             }
             Object fieldValue = SqlBuildUtils.getFieldValue(field, object);
-            if (null == fieldValue && !SqlBuildUtils.isHandleNull(field, HandleNullScope.INSERT)) {
+            if (null == fieldValue && !SqlBuildUtils.isHandleNull(field, HandleNullScope.INSERT, true)) {
                 continue;
             }
 
