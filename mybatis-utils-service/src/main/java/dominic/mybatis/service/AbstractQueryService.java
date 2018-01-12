@@ -192,11 +192,11 @@ public abstract class AbstractQueryService<T> {
         return map;
     }
 
-    public <R> R querySingleValue(@NonNull String column, @NonNull Class<R> singleValueType, @NonNull RestrictionUnit restrictions) {
+    public <R> R querySingleValue(@NonNull String column, @NonNull RestrictionUnit restrictions) {
         SelectSupport support = getSelectSupport(column, restrictions.SQL());
         Map<String, Object> map = getParamMap(support.SQL());
         map.putAll(restrictions.getParamMap());
-        return baseQueryDAO.querySingleValueBySql(map, singleValueType);
+        return baseQueryDAO.querySingleValueBySql(map);
     }
 
     @Deprecated
@@ -219,7 +219,7 @@ public abstract class AbstractQueryService<T> {
                 .pageParam(PageParam.builder().pageIndex(0).pageSize(1).build())
                 .build();
         Map<String, Object> map = getParamMap(support.SQL());
-        Long maxId = baseQueryDAO.querySingleValueBySql(map, Long.class);
+        Long maxId = baseQueryDAO.querySingleValueBySql(map);
         if (null == maxId) {
             maxId = 0L;
         }

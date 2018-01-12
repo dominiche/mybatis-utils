@@ -25,7 +25,7 @@ public interface BaseQueryDAO {
     HashMap<String, Object> queryUnique(Map<String, Object> map);
 
     @SelectProvider(type = BaseQueryProvider.class, method = BaseQueryProvider.QUERY_BY_SQL)
-    <T> T querySingleValueBySql(Map<String, Object> map, Class<T> singleValueClassType);
+    <T> T querySingleValueBySql(Map<String, Object> map);
 
 
 
