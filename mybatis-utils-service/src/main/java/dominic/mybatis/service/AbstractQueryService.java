@@ -159,7 +159,7 @@ public abstract class AbstractQueryService<T> {
     }
 
     public <R> List<T> queryByBean(@NonNull R bean, PageParam pageParam, AbstractAppender<OrderSupport> orderSupportAppender) {
-        return queryByBean(SqlBuildUtils.getFieldsByClass(clazz).toString(), RestrictionsUtils.buildConditions(bean), pageParam, orderSupportAppender);
+        return queryByBean(SqlBuildUtils.getFieldsByClass(clazz).toString(), bean, pageParam, orderSupportAppender);
     }
 
     public <R> List<T> queryByBean(@NonNull String customColumns, @NonNull R bean, PageParam pageParam, AbstractAppender<OrderSupport> orderSupportAppender) {
@@ -235,7 +235,7 @@ public abstract class AbstractQueryService<T> {
 
     public <R> long queryCount(@NonNull R bean) {
         Restrictions restrictions = RestrictionsUtils.buildConditions(bean);
-        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), restrictions.SQL());
+        SelectSupport support = getSelectSupport("count(1)", restrictions.SQL());
         Map<String, Object> map = getParamMap(support.SQL());
         map.putAll(restrictions.getParamMap());
         return baseQueryDAO.queryCountBySql(map);
