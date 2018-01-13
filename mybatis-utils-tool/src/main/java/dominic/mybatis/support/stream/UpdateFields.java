@@ -18,6 +18,9 @@ public class UpdateFields implements UpdateFieldUnit {
     public static UpdateFields.UpdateFieldsBuilder builder() {
         return new UpdateFields.UpdateFieldsBuilder();
     }
+    public static UpdateFields.UpdateFieldsBuilder builder(UpdateFields updateFields) {
+        return new UpdateFields.UpdateFieldsBuilder(updateFields.appender);
+    }
 
     @Override
     public String SQL() {
@@ -29,10 +32,18 @@ public class UpdateFields implements UpdateFieldUnit {
         return SQL();
     }
 
+    public UpdateFields add(UpdateField updateField) {
+        appender.append(updateField);
+        return this;
+    }
+
     public static class UpdateFieldsBuilder {
         private UpdateFieldAppender appender;
         UpdateFieldsBuilder() {
             this.appender = UpdateFieldAppender.newInstance();
+        }
+        UpdateFieldsBuilder(UpdateFieldAppender appender) {
+            this.appender = appender;
         }
 
         public UpdateFields build() {

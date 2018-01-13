@@ -34,6 +34,11 @@ public class Restrictions implements RestrictionUnit {
         return SQL();
     }
 
+    public Restrictions add(Restriction restriction) {
+        appender.append(restriction);
+        return this;
+    }
+
     public static class RestrictionsBuilder {
         private RestrictionAppender appender;
         RestrictionsBuilder() {
