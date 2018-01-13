@@ -1,10 +1,10 @@
 package dominic.mybatis.support;
 
-import dominic.mybatis.utils.SQLInjectPolicy;
-import dominic.mybatis.utils.utils.DateUtils;
+import com.google.common.collect.Maps;
+import dominic.mybatis.constants.MybatisUtils;
 import lombok.*;
 
-import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by herongxing on 2017/2/27 18:39.
@@ -13,25 +13,29 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateField implements UpdateFieldUnit {
+public class UpdateField extends UpdateFieldUnit {
     /**
      * 直接是set的内容，如：
      * status=1
      * zoneCode='TGQ123434'
+     *
+     * --->status=#{status}
      */
     private String field;
 
     public static <T> UpdateField set(@NonNull String name, T value) {
-        if (value instanceof String) {
-            return UpdateField.builder().field(name + "='" + SQLInjectPolicy.transform((String) value) + "'").build();
-        } else if (value instanceof Date) {
-            return UpdateField.builder().field(name + "='" + DateUtils.TIME_FORMAT.format((Date) value) + "'").build();
-        }
-        return UpdateField.builder().field(name + "=" + value).build();
+        String field = name + "=" + MybatisUtils.segment(MybatisUtils.UPDATE_SEGMENT_PREFIX, name);
+        UpdateField build = UpdateField.builder().field(field).build();
+        HashMap<String, Object> hashMap = Maps.newHashMap();
+        hashMap.put(MybatisUtils.keyName(MybatisUtils.UPDATE_SEGMENT_PREFIX, name), value);
+        build.setParamMap(hashMap);
+        return build;
     }
 
     public static UpdateField setBySql(@NonNull String field) {
-        return UpdateField.builder().field(field).build();
+        UpdateField build = UpdateField.builder().field(field).build();
+        build.setParamMap(Maps.newHashMap());
+        return build;
     }
 
     @Override

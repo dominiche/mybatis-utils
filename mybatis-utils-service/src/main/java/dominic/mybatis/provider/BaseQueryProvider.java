@@ -1,5 +1,6 @@
 package dominic.mybatis.provider;
 
+import dominic.mybatis.constants.MybatisUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -18,7 +19,7 @@ public class BaseQueryProvider {
      * @return
      */
     public String queryBySql(Map<String, Object> map) {
-        String sql = (String) map.get("sql");
+        String sql = (String) map.get(MybatisUtils.SQL);
         log.debug(sql);
         return sql;
     }

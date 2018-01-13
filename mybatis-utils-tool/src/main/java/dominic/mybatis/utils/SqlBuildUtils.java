@@ -216,14 +216,14 @@ public class SqlBuildUtils {
         return isHandleNull(field, handleNullScope, false);//默认null值不插入null
     }
 
-    private static boolean isHandleNull(Field field, HandleNullScope handleNullScope, boolean defaultInsertNull) {
+    public static boolean isHandleNull(Field field, HandleNullScope handleNullScope, boolean defaultHandleNull) {
         HandleNull handleNull = field.getAnnotation(HandleNull.class);
         if (null != handleNull) {
             if (handleNull.scope() == handleNullScope || HandleNullScope.ALL == handleNull.scope()) {
                 return handleNull.value();
             }
         }
-        return defaultInsertNull;
+        return defaultHandleNull;
     }
 
 

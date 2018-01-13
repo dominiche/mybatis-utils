@@ -1,12 +1,14 @@
 package dominic.mybatis.support;
 
 import com.google.common.base.Preconditions;
-import dominic.mybatis.utils.SQLInjectPolicy;
+import com.google.common.collect.Maps;
+import dominic.mybatis.constants.MybatisUtils;
 import dominic.mybatis.utils.utils.Separator;
 import lombok.*;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 import static dominic.mybatis.utils.SqlBuildUtils.isFirstAndAppend;
 
@@ -17,14 +19,19 @@ import static dominic.mybatis.utils.SqlBuildUtils.isFirstAndAppend;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Restriction implements RestrictionUnit {
+public class Restriction extends RestrictionUnit {
     private String condition;
 
     public static <T> Restriction eq(String name, @NonNull T value) {
-        if (value instanceof String) {
-            return Restriction.builder().condition(getName(name) + "='" + SQLInjectPolicy.transform((String) value) + "'").build();
-        }
-        return Restriction.builder().condition(getName(name) + "=" + value).build();
+        Restriction build = Restriction.builder().condition(getName(name) + "=" + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, name)).build();
+        buildParamMap(name, value, build);
+        return build;
+    }
+
+    private static <T> void buildParamMap(String name, @NonNull T value, Restriction build) {
+        HashMap<String, Object> hashMap = Maps.newHashMap();
+        hashMap.put(MybatisUtils.keyName(MybatisUtils.CONDITION_SEGMENT_PREFIX, name), value);
+        build.setParamMap(hashMap);
     }
 
     private static String getName(String name) {
@@ -48,54 +55,55 @@ public class Restriction implements RestrictionUnit {
     }
 
     public static <T> Restriction notEq(String name, @NonNull T value) {
-        if (value instanceof String) {
-            return Restriction.builder().condition(getName(name) + "!='" + SQLInjectPolicy.transform((String) value) + "'").build();
-        }
-        return Restriction.builder().condition(getName(name) + "!=" + value).build();
+        Restriction build = Restriction.builder().condition(getName(name) + "!=" + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, name)).build();
+        buildParamMap(name, value, build);
+        return build;
+    }
+
+    public static Restriction isNull(String name) {
+        Restriction build = Restriction.builder().condition(getName(name) + "is NULL").build();
+        build.setParamMap(Maps.newHashMap());
+        return build;
+    }
+
+    public static Restriction isNotNull(String name) {
+        Restriction build = Restriction.builder().condition(getName(name) + "is NOT NULL").build();
+        build.setParamMap(Maps.newHashMap());
+        return build;
     }
 
     public static Restriction like(String name, @NonNull String value) {
-        return Restriction.builder().condition(getName(name) + " like CONCAT('" + SQLInjectPolicy.transformForLike(value) + "','%')").build();
+        Restriction build = Restriction.builder().condition(getName(name) + " like CONCAT(" + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, name) + ",'%')").build();
+        buildParamMap(name, value, build);
+        return build;
     }
 
     public static Restriction likeBoth(String name, @NonNull String value) {
-        return Restriction.builder().condition(getName(name) + " like CONCAT('%','" + SQLInjectPolicy.transformForLike(value) + "','%')").build();
+        Restriction build = Restriction.builder().condition(getName(name) + " like CONCAT('%'," + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, name) + ",'%')").build();
+        buildParamMap(name, value, build);
+        return build;
     }
 
     public static <R> Restriction in(String name, Collection<R> collection) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(collection), "arg list can't be empty!");
         boolean first = true;
-        R next = collection.iterator().next();
-        boolean isString = false;
-        if (next instanceof String) {
-            isString = true;
-        }
         StringBuilder builder = new StringBuilder(getName(name));
         builder.append(" IN (");
+        int count = 0;
+        HashMap<String, Object> hashMap = Maps.newHashMap();
         for (R r : collection) {
             first = isFirstAndAppend(builder, first, Separator.SEPARATOR_COMMA);
-            if (isString) {
-                builder.append("'").append(SQLInjectPolicy.transform((String) r)).append("'");
-            } else {
-                builder.append(r);
-            }
+            String key = name + "_" + count;
+            builder.append(MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, key));
+            hashMap.put(MybatisUtils.keyName(MybatisUtils.CONDITION_SEGMENT_PREFIX, key), r);
+            ++count;
         }
         builder.append(")");
 
-        return Restriction.builder().condition(builder.toString()).build();
+        Restriction build = Restriction.builder().condition(builder.toString()).build();
+        build.setParamMap(hashMap);
+        return build;
     }
-
-    @Deprecated
-    public static Restriction dateGe(String name, @NonNull String value) {
-        return Restriction.builder().condition(getName(name) + " >='" + SQLInjectPolicy.transform(value) + "'").build();
-    }
-
-    @Deprecated
-    public static Restriction dateLe(String name, @NonNull String value) {
-        return Restriction.builder().condition(getName(name) + " <='" + SQLInjectPolicy.transform(value) + "'").build();
-    }
-
-
 
     public static Restriction greaterEqual(String name, Object value) {
         return getEqualRestriction(name, value, ">=");
@@ -110,18 +118,15 @@ public class Restriction implements RestrictionUnit {
         return getEqualRestriction(name, value, "<");
     }
     private static Restriction getEqualRestriction(String name, @NonNull Object value, String equalSign) {
-        StringBuilder builder = new StringBuilder(getName(name));
-        builder.append(" ").append(equalSign).append(" ");
-        if (value instanceof String) {
-            builder.append("'").append(SQLInjectPolicy.transform((String) value)).append("'");
-        } else {
-            builder.append(value);
-        }
-        return Restriction.builder().condition(builder.toString()).build();
+        Restriction build = Restriction.builder().condition(getName(name) + " " + equalSign + " " + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, name)).build();
+        buildParamMap(name, value, build);
+        return build;
     }
 
     public static Restriction sql(@NonNull String restriction) {
-        return Restriction.builder().condition(restriction).build();
+        Restriction build = Restriction.builder().condition(restriction).build();
+        build.setParamMap(Maps.newHashMap());
+        return build;
     }
 
     @Override

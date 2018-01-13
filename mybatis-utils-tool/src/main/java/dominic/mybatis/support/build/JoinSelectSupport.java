@@ -37,6 +37,11 @@ public class JoinSelectSupport implements SelectSupportUnit {
     private PageParam pageParam;
 
     @Override
+    public String toString() {
+        return SQL();
+    }
+
+    @Override
     public String SQL() {
         Preconditions.checkNotNull(selectFields, "selectFields 不能为空！");
         Preconditions.checkNotNull(tableSupport, "tableSupport 不能为空！");

@@ -39,4 +39,16 @@ public class RestrictionTest {
         Restriction in = Restriction.lessEqual("a", 123);
         System.out.println(in.SQL());
     }
+
+    @Test
+    public void testIsNull() {
+        Restriction in = Restriction.isNull("a");
+        System.out.println(in.SQL());
+    }
+
+    @Test
+    public void testIsNotNull() {
+        Restriction in = Restriction.isNotNull("a");
+        System.out.println(in.SQL());
+    }
 }

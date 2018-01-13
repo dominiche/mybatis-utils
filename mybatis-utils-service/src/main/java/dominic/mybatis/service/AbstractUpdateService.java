@@ -1,12 +1,15 @@
 package dominic.mybatis.service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import dominic.mybatis.annotation.IdName;
 import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.bean.IdContainer;
+import dominic.mybatis.constants.MybatisUtils;
 import dominic.mybatis.dao.update.BaseUpdateDAO;
 import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.RestrictionUnit;
+import dominic.mybatis.support.UpdateField;
 import dominic.mybatis.support.UpdateFieldUnit;
 import dominic.mybatis.support.build.UpdateSupport;
 import dominic.mybatis.utils.RestrictionsUtils;
@@ -22,6 +25,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by herongxing on 2017/2/27 16:54.
@@ -64,30 +68,51 @@ public abstract class AbstractUpdateService<T> {
         SQL sql = new SQL();
         sql.UPDATE(getTableName())
                 .SET(updateFieldUnit.SQL())
-                .WHERE(getIdName() + "=" + id);
-        return baseUpdateDAO.update(sql.toString());
+                .WHERE(getIdName() + "=" + MybatisUtils.segment(MybatisUtils.ID_NAME));
+        Map<String, Object> map = getParamMap(sql.toString());
+        map.putAll(updateFieldUnit.getParamMap());
+        map.put(MybatisUtils.ID_NAME, id);
+        return baseUpdateDAO.update(map);
     }
+
     public <R extends Number> int updateById(UpdateFieldUnit updateFieldUnit, Collection<R> ids) {
         SQL sql = new SQL();
+        Restriction restriction = Restriction.in(getIdName(), ids);
         sql.UPDATE(getTableName())
                 .SET(updateFieldUnit.SQL())
-                .WHERE(Restriction.in(getIdName(), ids).SQL());
-        return baseUpdateDAO.update(sql.toString());
+                .WHERE(restriction.SQL());
+        Map<String, Object> map = getParamMap(sql.toString());
+        map.putAll(restriction.getParamMap());
+        return baseUpdateDAO.update(map);
     }
 
     @Deprecated
     public <R extends Number> int updateById(String updateFields, R id) {
-        String sql = "UPDATE " + getTableName() + " SET " + updateFields + " where " + getIdName() + "=" + id;
-        return baseUpdateDAO.update(sql);
-    }
-    @Deprecated
-    public <R extends Number> int updateById(String updateFields, Collection<R> ids) {
-        String sql = "UPDATE " + getTableName() + " SET " + updateFields + " where " + Restriction.in(getIdName(), ids).SQL();
-        return baseUpdateDAO.update(sql);
+        UpdateFieldUnit updateField = UpdateField.setBySql(updateFields);
+        return updateById(updateField, id);
     }
 
+    @Deprecated
+    public <R extends Number> int updateById(String updateFields, Collection<R> ids) {
+        UpdateFieldUnit updateField = UpdateField.setBySql(updateFields);
+        return updateById(updateField, ids);
+    }
+
+
+    private Map<String, Object> getParamMap(String sql) {
+        Map<String, Object> map = Maps.newHashMap();
+        map.put(MybatisUtils.SQL, sql);
+        return map;
+    }
+
+
+    @Deprecated
     public int update(UpdateSupport updateSupport) {
-        return baseUpdateDAO.update(updateSupport.SQL());
+        return baseUpdateDAO.updateBySQL(updateSupport.SQL());
+    }
+    @Deprecated
+    public int update(String updateSql) {
+        return baseUpdateDAO.updateBySQL(updateSql);
     }
 
     public int update(UpdateFieldUnit updateFieldUnit, RestrictionUnit restrictions) {
@@ -96,30 +121,20 @@ public abstract class AbstractUpdateService<T> {
                 .tableName(getTableName())
                 .conditions(restrictions.SQL())
                 .build();
-        return baseUpdateDAO.update(updateSupport.SQL());
+        Map<String, Object> map = getParamMap(updateSupport.SQL());
+        map.putAll(updateFieldUnit.getParamMap());
+        map.putAll(restrictions.getParamMap());
+        return baseUpdateDAO.update(map);
     }
 
     public <U> int update(U bean, RestrictionUnit restrictions) {
-        UpdateSupport updateSupport = UpdateSupport.builder()
-                .updateFields(UpdateFieldsUtils.buildUpdateFields(bean).SQL())
-                .tableName(getTableName())
-                .conditions(restrictions.SQL())
-                .build();
-        return baseUpdateDAO.update(updateSupport.SQL());
+        return update(UpdateFieldsUtils.buildUpdateFields(bean), restrictions);
     }
 
     public <U, Q> int updateByQueryBean(U bean, Q conditionBean) {
-        UpdateSupport updateSupport = UpdateSupport.builder()
-                .updateFields(UpdateFieldsUtils.buildUpdateFields(bean).SQL())
-                .tableName(getTableName())
-                .conditions(RestrictionsUtils.buildConditions(conditionBean).SQL())
-                .build();
-        return baseUpdateDAO.update(updateSupport.SQL());
+        return update(UpdateFieldsUtils.buildUpdateFields(bean), RestrictionsUtils.buildConditions(conditionBean));
     }
 
-    public int update(String updateSql) {
-        return baseUpdateDAO.update(updateSql);
-    }
 
     /**
      * 会回填id
@@ -179,7 +194,13 @@ public abstract class AbstractUpdateService<T> {
         int result = 0;
         List<List<T>> partitions = Lists.partition(sourceList, 1000);
         for (List<T> list : partitions) {
-            result += baseUpdateDAO.insertList(list, getTableName());
+            Map<String, Object> map = Maps.newHashMap();
+            map.put(MybatisUtils.TABLE_NAME, getTableName());
+            map.put(MybatisUtils.BEAN_NAME, list);
+            for (int i=0; i<list.size(); ++i) {
+                map.put(MybatisUtils.wrapBeanName(i), list.get(i));
+            }
+            result += baseUpdateDAO.insertList(map);
         }
         return result;
     }

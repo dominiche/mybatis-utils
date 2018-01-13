@@ -37,4 +37,9 @@ public class OrderSupport implements SupportUnit {
     public String SQL() {
         return orderField + " " + direction;
     }
+
+    @Override
+    public String toString() {
+        return SQL();
+    }
 }

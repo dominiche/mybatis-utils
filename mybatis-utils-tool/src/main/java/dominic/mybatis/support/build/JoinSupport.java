@@ -55,4 +55,9 @@ public class JoinSupport implements SupportUnit {
     public String SQL() {
         return joinType + " " + tableName + " AS " + alias + " on " + onCondition;
     }
+
+    @Override
+    public String toString() {
+        return SQL();
+    }
 }

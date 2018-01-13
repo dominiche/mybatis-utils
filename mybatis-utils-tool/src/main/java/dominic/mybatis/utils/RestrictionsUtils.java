@@ -50,7 +50,7 @@ public class RestrictionsUtils {
                     continue;
                 }
 
-                String fieldName = prefix + SqlBuildUtils.getFieldName(field, isUseUnderscoreToCamelCase);
+                String fieldName = prefix + SqlBuildUtils.getFieldNameUnescaped(field, isUseUnderscoreToCamelCase);
                 if (fieldValue instanceof Collection) {
                     //collection
                     Collection collection = (Collection) fieldValue;

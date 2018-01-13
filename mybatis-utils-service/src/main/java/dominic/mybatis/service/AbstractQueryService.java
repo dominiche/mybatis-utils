@@ -1,8 +1,10 @@
 package dominic.mybatis.service;
 
+import com.google.common.collect.Maps;
 import dominic.mybatis.annotation.IdName;
 import dominic.mybatis.annotation.TableName;
 import dominic.mybatis.bean.PageParam;
+import dominic.mybatis.constants.MybatisUtils;
 import dominic.mybatis.dao.query.BaseQueryDAO;
 import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.RestrictionUnit;
@@ -11,6 +13,7 @@ import dominic.mybatis.support.appender.OrderSupportAppender;
 import dominic.mybatis.support.build.OrderSupport;
 import dominic.mybatis.support.build.SelectSupport;
 import dominic.mybatis.support.build.SelectSupportUnit;
+import dominic.mybatis.support.stream.Restrictions;
 import dominic.mybatis.utils.RestrictionsUtils;
 import dominic.mybatis.utils.SqlBuildUtils;
 import dominic.mybatis.utils.TransformUtils;
@@ -20,10 +23,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by herongxing on 2017/2/23 19:34.
@@ -63,17 +63,8 @@ public abstract class AbstractQueryService<T> {
      */
     @Deprecated
     public <R extends Number> List<T> queryByIdList(List<R> idList) {
-        SelectSupport support = SelectSupport.builder()
-                .selectFields(SqlBuildUtils.getFieldsByClass(getClazz()).toString())
-                .tableName(getTableName())
-                .conditions(Restriction.in(getIdName(), idList).SQL())
-                .build();
-        List<T> list = new ArrayList<>();
-        List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(support.SQL());
-        if (CollectionUtils.isNotEmpty(mapList)) {
-            list = TransformUtils.hashMapToBean(mapList, clazz);
-        }
-        return list;
+        Restriction restriction = Restriction.in(getIdName(), idList);
+        return query(SqlBuildUtils.getFieldsByClass(clazz).toString(), restriction);
     }
 
     /**
@@ -93,53 +84,36 @@ public abstract class AbstractQueryService<T> {
      * @return
      */
     public <R extends Number> T queryById(R id) {
+        Restriction restriction = Restriction.eq(getIdName(), id);
         SelectSupport support = SelectSupport.builder()
                 .selectFields(SqlBuildUtils.getFieldsByClass(getClazz()).toString())
                 .tableName(getTableName())
-                .conditions(Restriction.eq(getIdName(), id).SQL())
+                .conditions(restriction.SQL())
                 .build();
-        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
+        Map<String, Object> map = getParamMap(support.SQL());
+        map.putAll(restriction.getParamMap());
+        return doQueryUnique(map);
+    }
+
+    private T doQueryUnique(Map<String, Object> map) {
+        HashMap<String, Object> hashMap = baseQueryDAO.queryUnique(map);
         return TransformUtils.hashMapToBean(hashMap, clazz);
     }
-
-    public List<T> query(@NonNull RestrictionUnit restrictions) {
-        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), restrictions.SQL());
-        return queryBySql(support.SQL());
+    private List<T> doQueryList(Map<String, Object> map) {
+        List<HashMap<String, Object>> mapList = baseQueryDAO.query(map);
+        List<T> list = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(mapList)) {
+            list = TransformUtils.hashMapToBean(mapList, clazz);
+        }
+        return list;
     }
 
-    public List<T> query(@NonNull String customColumns,@NonNull RestrictionUnit restrictions) {
-        SelectSupport support = getSelectSupport(customColumns, restrictions.SQL());
-        return queryBySql(support.SQL());
+    @Deprecated
+    public List<T> query(SelectSupportUnit support) {
+        return query(support.SQL());
     }
-
-    public <R> List<T> queryByBean(@NonNull R bean) {
-        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), RestrictionsUtils.buildConditions(bean).SQL());
-        return queryBySql(support.SQL());
-    }
-
-    public <R> List<T> queryByBean(@NonNull String customColumns, @NonNull R bean) {
-        SelectSupport support = getSelectSupport(customColumns, RestrictionsUtils.buildConditions(bean).SQL());
-        return queryBySql(support.SQL());
-    }
-
-    public <R> List<T> queryByBean(@NonNull R bean, PageParam pageParam) {
-        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), RestrictionsUtils.buildConditions(bean).SQL());
-        support.setPageParam(pageParam);
-        return queryBySql(support.SQL());
-    }
-
-    public <R> List<T> queryByBean(@NonNull R bean, PageParam pageParam, AbstractAppender<OrderSupport> orderSupportAppender) {
-        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), RestrictionsUtils.buildConditions(bean).SQL());
-        support.setPageParam(pageParam);
-        support.setOrderSupportAppender(orderSupportAppender);
-        return queryBySql(support.SQL());
-    }
-
-    public List<T> queryBySql(SelectSupportUnit support) {
-        return queryBySql(support.SQL());
-    }
-
-    public List<T> queryBySql(@NonNull String sql) {
+    @Deprecated
+    public List<T> query(@NonNull String sql) {
         List<T> list = new ArrayList<>();
         List<HashMap<String, Object>> mapList = baseQueryDAO.queryBySql(sql);
         if (CollectionUtils.isNotEmpty(mapList)) {
@@ -148,11 +122,61 @@ public abstract class AbstractQueryService<T> {
         return list;
     }
 
+    public List<T> query(@NonNull RestrictionUnit restrictions) {
+        return query(SqlBuildUtils.getFieldsByClass(clazz).toString(), restrictions);
+    }
+
+    public List<T> query(@NonNull String customColumns, @NonNull RestrictionUnit restrictions) {
+        return query(customColumns, restrictions, null, null);
+    }
+
+    public List<T> query(@NonNull RestrictionUnit restrictions, PageParam pageParam, AbstractAppender<OrderSupport> orderSupportAppender) {
+        return query(SqlBuildUtils.getFieldsByClass(clazz).toString(), restrictions, pageParam, orderSupportAppender);
+    }
+
+    public List<T> query(@NonNull String customColumns, @NonNull RestrictionUnit restrictions, PageParam pageParam, AbstractAppender<OrderSupport> orderSupportAppender) {
+        SelectSupport support = getSelectSupport(customColumns, restrictions.SQL());
+        support.setPageParam(pageParam);
+        support.setOrderSupportAppender(orderSupportAppender);
+        Map<String, Object> map = getParamMap(support.SQL());
+        map.putAll(restrictions.getParamMap());
+        return doQueryList(map);
+    }
+
+
+    public <R> List<T> queryByBean(@NonNull R bean) {
+        Restrictions restrictions = RestrictionsUtils.buildConditions(bean);
+        return query(SqlBuildUtils.getFieldsByClass(clazz).toString(), restrictions);
+    }
+
+    public <R> List<T> queryByBean(@NonNull String customColumns, @NonNull R bean) {
+        Restrictions restrictions = RestrictionsUtils.buildConditions(bean);
+        return query(customColumns, restrictions);
+    }
+
+    public <R> List<T> queryByBean(@NonNull R bean, PageParam pageParam) {
+        return queryByBean(bean, pageParam, null);
+    }
+
+    public <R> List<T> queryByBean(@NonNull R bean, PageParam pageParam, AbstractAppender<OrderSupport> orderSupportAppender) {
+        return queryByBean(SqlBuildUtils.getFieldsByClass(clazz).toString(), bean, pageParam, orderSupportAppender);
+    }
+
+    public <R> List<T> queryByBean(@NonNull String customColumns, @NonNull R bean, PageParam pageParam, AbstractAppender<OrderSupport> orderSupportAppender) {
+        return query(customColumns, RestrictionsUtils.buildConditions(bean), pageParam, orderSupportAppender);
+    }
+
+
     public <R> T queryUnique(@NonNull String conditionColumn, @NonNull R conditionColumnValue) {
-        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(),
-                Restriction.eq(conditionColumn, conditionColumnValue).SQL());
-        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
-        return TransformUtils.hashMapToBean(hashMap, clazz);
+        Restriction restriction = Restriction.eq(conditionColumn, conditionColumnValue);
+        return queryUnique(restriction);
+    }
+
+    public T queryUnique(@NonNull RestrictionUnit restriction) {
+        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), restriction.SQL());
+        Map<String, Object> map = getParamMap(support.SQL());
+        map.putAll(restriction.getParamMap());
+        return doQueryUnique(map);
     }
 
     private SelectSupport getSelectSupport(String columns, String conditions) {
@@ -162,22 +186,24 @@ public abstract class AbstractQueryService<T> {
                     .conditions(conditions)
                     .build();
     }
-
-    public T queryUnique(@NonNull RestrictionUnit restrictions) {
-        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), restrictions.SQL());
-        HashMap<String, Object> hashMap = baseQueryDAO.queryUniqueBySql(support.SQL());
-        return TransformUtils.hashMapToBean(hashMap, clazz);
+    private Map<String, Object> getParamMap(String sql) {
+        Map<String, Object> map = Maps.newHashMap();
+        map.put(MybatisUtils.SQL, sql);
+        return map;
     }
 
-    public <R> R querySingleValue(@NonNull String column, @NonNull Class<R> singleValueType, @NonNull RestrictionUnit restrictions) {
+    public <R> R querySingleValue(@NonNull String column, @NonNull RestrictionUnit restrictions) {
         SelectSupport support = getSelectSupport(column, restrictions.SQL());
-        return baseQueryDAO.querySingleValueBySql(support.SQL(), singleValueType);
+        Map<String, Object> map = getParamMap(support.SQL());
+        map.putAll(restrictions.getParamMap());
+        return baseQueryDAO.querySingleValueBySql(map);
     }
 
+    @Deprecated
     public List<HashMap<String, Object>> querySpecialList(String sql) {
         return baseQueryDAO.querySpecialListBySql(sql);
     }
-
+    @Deprecated
     public HashMap<String, Object> querySpecial(String sql) {
         return baseQueryDAO.querySpecialBySql(sql);
     }
@@ -192,7 +218,8 @@ public abstract class AbstractQueryService<T> {
                 .orderSupportAppender(OrderSupportAppender.newInstance().append(OrderSupport.DESC(getIdName())))
                 .pageParam(PageParam.builder().pageIndex(0).pageSize(1).build())
                 .build();
-        Long maxId = baseQueryDAO.querySingleValueBySql(support.SQL(), Long.class);
+        Map<String, Object> map = getParamMap(support.SQL());
+        Long maxId = baseQueryDAO.querySingleValueBySql(map);
         if (null == maxId) {
             maxId = 0L;
         }
@@ -206,17 +233,21 @@ public abstract class AbstractQueryService<T> {
         return queryMaxIdLongValue().intValue();
     }
 
-    public long queryCount(SelectSupportUnit support) {
-        return baseQueryDAO.queryCountBySql(support.countSQL());
+    public <R> long queryCount(@NonNull R bean) {
+        Restrictions restrictions = RestrictionsUtils.buildConditions(bean);
+        SelectSupport support = getSelectSupport("count(1)", restrictions.SQL());
+        Map<String, Object> map = getParamMap(support.SQL());
+        map.putAll(restrictions.getParamMap());
+        return baseQueryDAO.queryCountBySql(map);
     }
 
-    public <R> long queryCount(@NonNull R bean) {
-        SelectSupport support = getSelectSupport(SqlBuildUtils.getFieldsByClass(clazz).toString(), RestrictionsUtils.buildConditions(bean).SQL());
-        return baseQueryDAO.queryCountBySql(support.countSQL());
+    public long queryCount(SelectSupportUnit support) {
+        return queryCount(support.countSQL());
     }
 
     public long queryCount(String sql) {
-        return baseQueryDAO.queryCountBySql(sql);
+        Map<String, Object> map = getParamMap(sql);
+        return baseQueryDAO.queryCountBySql(map);
     }
 
 }
