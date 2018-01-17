@@ -5,6 +5,9 @@
 
 
 ###版本更新日志：
+####2.0.3: TransformUtils, fix number type convert exception
+    修复number类型的字段转换出错，如：Integer转成Long等
+
 ####2.0.0: 2018-1-11 15:10:32 SQL语句拼接预编译参数化改造
     
 ####1.5.0: InsertNull注解改名HandleNull，添加scope（see HandleNullScope）
