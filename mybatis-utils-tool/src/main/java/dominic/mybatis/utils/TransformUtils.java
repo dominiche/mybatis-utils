@@ -1,6 +1,8 @@
 package dominic.mybatis.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.converters.LongConverter;
+import org.apache.commons.beanutils.converters.NumberConverter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 
@@ -16,6 +18,14 @@ import java.util.List;
 @Slf4j
 public class TransformUtils {
 
+    private static Class<Number> numberClass = Number.class;
+    private static NumberConverter converter = new NumberConverter(true) {
+        @Override
+        protected Class<?> getDefaultType() {
+            return Integer.class;
+        }
+    };
+
     public static <T> T hashMapToBean(HashMap<String, Object> map, Class<T> tClass) {
         if (MapUtils.isEmpty(map)) {
             return null;
@@ -28,6 +38,10 @@ public class TransformUtils {
                 Object value = map.get(fieldName);
                 if (null != value) {
                     try {
+                        Class<?> fieldType = field.getType();
+                        if (fieldType != value.getClass() && numberClass.isAssignableFrom(fieldType)) {
+                            value = converter.convert(fieldType, value);
+                        }
                         field.setAccessible(true);
                         field.set(t, value);
                     } catch (Exception e) {
