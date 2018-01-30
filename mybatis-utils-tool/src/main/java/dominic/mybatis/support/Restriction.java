@@ -6,6 +6,7 @@ import dominic.mybatis.constants.MybatisUtils;
 import dominic.mybatis.utils.utils.Separator;
 import lombok.*;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -106,20 +107,28 @@ public class Restriction extends RestrictionUnit {
     }
 
     public static Restriction greaterEqual(String name, Object value) {
-        return getEqualRestriction(name, value, ">=");
+        return equalRestriction(name, value, ">=");
     }
     public static Restriction greaterThan(String name, Object value) {
-        return getEqualRestriction(name, value, ">");
+        return equalRestriction(name, value, ">");
     }
     public static Restriction lessEqual(String name, Object value) {
-        return getEqualRestriction(name, value, "<=");
+        return equalRestriction(name, value, "<=");
     }
     public static Restriction lessThan(String name, Object value) {
-        return getEqualRestriction(name, value, "<");
+        return equalRestriction(name, value, "<");
     }
-    private static Restriction getEqualRestriction(String name, @NonNull Object value, String equalSign) {
-        Restriction build = Restriction.builder().condition(getName(name) + " " + equalSign + " " + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, name)).build();
-        buildParamMap(name, value, build);
+    public static Restriction equalRestriction(String name, Object value, String equalSign) {
+        return equalRestriction(name, value, equalSign, null);
+    }
+    //todo RestrictionsUtils的处理date类型param名字相同问题的临时解决
+    public static Restriction equalRestriction(String name, @NonNull Object value, String equalSign, String paramSuffix) {
+        String paramName = name;
+        if (StringUtils.isNotBlank(paramSuffix)) {
+            paramName = name + paramSuffix;
+        }
+        Restriction build = Restriction.builder().condition(getName(name) + " " + equalSign + " " + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, paramName)).build();
+        buildParamMap(paramName, value, build);
         return build;
     }
 

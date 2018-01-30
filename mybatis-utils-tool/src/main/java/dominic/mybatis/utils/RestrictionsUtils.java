@@ -5,6 +5,7 @@ import dominic.mybatis.annotation.StringPolicy;
 import dominic.mybatis.constants.DateRangePolicy;
 import dominic.mybatis.constants.DateTypePolicy;
 import dominic.mybatis.constants.StringTypePolicy;
+import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.stream.Restrictions;
 import dominic.mybatis.utils.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -92,10 +93,10 @@ public class RestrictionsUtils {
                         DateRangePolicy range = datePolicy.range();
                         if(range == DateRangePolicy.BEGIN){
                             String timeStr = DateUtils.TIME_FORMAT.format(date);
-                            builder.greaterEqual(columnName, timeStr);
+                            builder.restriction(getBeginRestriction(columnName, timeStr));
                         }else if(range == DateRangePolicy.END){
                             String timeStr = DateUtils.TIME_FORMAT.format(date);
-                            builder.lessEqual(columnName, timeStr);
+                            builder.restriction(getEndRestriction(columnName, timeStr));
                         }
                     }
                 } else {
@@ -117,18 +118,26 @@ public class RestrictionsUtils {
         if(dateType == DateTypePolicy.DATE){
             if(range == DateRangePolicy.BEGIN){
                 String timeStr = DateUtils.DATE_FORMAT.format(date) + " 00:00:00";
-                builder.greaterEqual(columnName, timeStr);
+                builder.restriction(getBeginRestriction(columnName, timeStr));
             }else if(range == DateRangePolicy.END){
                 String timeStr = DateUtils.DATE_FORMAT.format(date) + " 23:59:59";
-                builder.lessEqual(columnName, timeStr);
+                builder.restriction(getEndRestriction(columnName, timeStr));
             }
         } else if(dateType == DateTypePolicy.DATE_TIME){
             String timeStr = DateUtils.TIME_FORMAT.format(date);
             if(range == DateRangePolicy.BEGIN){
-                builder.greaterEqual(columnName, timeStr);
+                builder.restriction(getBeginRestriction(columnName, timeStr));
             }else if(range == DateRangePolicy.END){
-                builder.lessEqual(columnName, timeStr);
+                builder.restriction(getEndRestriction(columnName, timeStr));
             }
         }
+    }
+
+    private static Restriction getBeginRestriction(String columnName, String timeStr) {
+        return Restriction.equalRestriction(columnName, timeStr, ">=", "_begin");
+    }
+
+    private static Restriction getEndRestriction(String columnName, String timeStr) {
+        return Restriction.equalRestriction(columnName, timeStr, "<=", "_end");
     }
 }
