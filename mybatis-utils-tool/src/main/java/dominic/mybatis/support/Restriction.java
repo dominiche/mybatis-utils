@@ -6,10 +6,10 @@ import dominic.mybatis.constants.MybatisUtils;
 import dominic.mybatis.utils.utils.Separator;
 import lombok.*;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 
 import static dominic.mybatis.utils.SqlBuildUtils.isFirstAndAppend;
 
@@ -23,16 +23,26 @@ import static dominic.mybatis.utils.SqlBuildUtils.isFirstAndAppend;
 public class Restriction extends RestrictionUnit {
     private String condition;
 
-    public static <T> Restriction eq(String name, @NonNull T value) {
-        Restriction build = Restriction.builder().condition(getName(name) + "=" + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, name)).build();
-        buildParamMap(name, value, build);
-        return build;
+    private static <T> void buildParamMap(String paramName, @NonNull T value, Restriction build) {
+        HashMap<String, Object> hashMap = Maps.newHashMap();
+        hashMap.put(paramName, value);
+        build.setParamMap(hashMap);
     }
 
-    private static <T> void buildParamMap(String name, @NonNull T value, Restriction build) {
-        HashMap<String, Object> hashMap = Maps.newHashMap();
-        hashMap.put(MybatisUtils.keyName(MybatisUtils.CONDITION_SEGMENT_PREFIX, name), value);
-        build.setParamMap(hashMap);
+    private static Restriction buildRestriction(String name, String middleSign, Object value) {
+        String fieldName = getName(name);
+        if (Objects.isNull(value)) {
+            Restriction build = Restriction.builder().condition(fieldName + middleSign).build();
+            build.setParamMap(Maps.newHashMap());
+            return build;
+        } else {
+            String paramName = MybatisUtils.paramName(MybatisUtils.CONDITION_SEGMENT_PREFIX, name);
+            Restriction build = Restriction.builder().condition(fieldName + middleSign + MybatisUtils.paramSegment(paramName)).build();
+            HashMap<String, Object> hashMap = Maps.newHashMap();
+            hashMap.put(paramName, value);
+            build.setParamMap(hashMap);
+            return build;
+        }
     }
 
     private static String getName(String name) {
@@ -42,9 +52,7 @@ public class Restriction extends RestrictionUnit {
             //联表的条件，有表别名前缀
             String prefix = split[0];
             String realName = split[1];
-            if (realName.startsWith("`")) {
-                result = prefix + "." + realName;
-            } else {
+            if (!realName.startsWith("`")) {
                 result = prefix + "." + "`" + realName + "`";
             }
         } else {
@@ -55,32 +63,47 @@ public class Restriction extends RestrictionUnit {
         return result;
     }
 
+    public static <T> Restriction eq(String name, @NonNull T value) {
+        return buildRestriction(name, "=", value);
+    }
+
     public static <T> Restriction notEq(String name, @NonNull T value) {
-        Restriction build = Restriction.builder().condition(getName(name) + "!=" + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, name)).build();
-        buildParamMap(name, value, build);
-        return build;
+        return buildRestriction(name, "!=", value);
+    }
+
+    public static Restriction greaterEqual(String name, Object value) {
+        return buildRestriction(name, ">=", value);
+    }
+    public static Restriction greaterThan(String name, Object value) {
+        return buildRestriction(name, ">", value);
+    }
+    public static Restriction lessEqual(String name, Object value) {
+        return buildRestriction(name, "<=", value);
+    }
+    public static Restriction lessThan(String name, Object value) {
+        return buildRestriction(name, "<", value);
     }
 
     public static Restriction isNull(String name) {
-        Restriction build = Restriction.builder().condition(getName(name) + "is NULL").build();
-        build.setParamMap(Maps.newHashMap());
-        return build;
+        return buildRestriction(name, "is NULL", null);
     }
 
     public static Restriction isNotNull(String name) {
-        Restriction build = Restriction.builder().condition(getName(name) + "is NOT NULL").build();
-        build.setParamMap(Maps.newHashMap());
-        return build;
+        return buildRestriction(name, "is NOT NULL", null);
     }
 
     public static Restriction like(String name, @NonNull String value) {
-        Restriction build = Restriction.builder().condition(getName(name) + " like CONCAT(" + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, name) + ",'%')").build();
-        buildParamMap(name, value, build);
+        String fieldName = getName(name);
+        String paramName = MybatisUtils.paramName(MybatisUtils.CONDITION_SEGMENT_PREFIX, name);
+        Restriction build = Restriction.builder().condition(fieldName + " like CONCAT(" + MybatisUtils.paramSegment(paramName) + ",'%')").build();
+        buildParamMap(paramName, value, build);
         return build;
     }
 
     public static Restriction likeBoth(String name, @NonNull String value) {
-        Restriction build = Restriction.builder().condition(getName(name) + " like CONCAT('%'," + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, name) + ",'%')").build();
+        String fieldName = getName(name);
+        String paramName = MybatisUtils.paramName(MybatisUtils.CONDITION_SEGMENT_PREFIX, name);
+        Restriction build = Restriction.builder().condition(fieldName + " like CONCAT('%'," + MybatisUtils.paramSegment(paramName) + ",'%')").build();
         buildParamMap(name, value, build);
         return build;
     }
@@ -100,43 +123,18 @@ public class Restriction extends RestrictionUnit {
         builder.append(" ").append(inSign).append(" (");
         int count = 0;
         HashMap<String, Object> hashMap = Maps.newHashMap();
+        String paramName = MybatisUtils.paramName(MybatisUtils.CONDITION_SEGMENT_PREFIX, name);
         for (R r : collection) {
             first = isFirstAndAppend(builder, first, Separator.SEPARATOR_COMMA);
-            String key = name + "_" + count;
-            builder.append(MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, key));
-            hashMap.put(MybatisUtils.keyName(MybatisUtils.CONDITION_SEGMENT_PREFIX, key), r);
+            String key = paramName + "_" + count;
+            builder.append(MybatisUtils.paramSegment(key));
+            hashMap.put(key, r);
             ++count;
         }
         builder.append(")");
 
         Restriction build = Restriction.builder().condition(builder.toString()).build();
         build.setParamMap(hashMap);
-        return build;
-    }
-
-    public static Restriction greaterEqual(String name, Object value) {
-        return equalRestriction(name, value, ">=");
-    }
-    public static Restriction greaterThan(String name, Object value) {
-        return equalRestriction(name, value, ">");
-    }
-    public static Restriction lessEqual(String name, Object value) {
-        return equalRestriction(name, value, "<=");
-    }
-    public static Restriction lessThan(String name, Object value) {
-        return equalRestriction(name, value, "<");
-    }
-    private static Restriction equalRestriction(String name, Object value, String equalSign) {
-        return equalRestriction(name, value, equalSign, null);
-    }
-    //todo RestrictionsUtils的处理date类型param名字相同问题的临时解决
-    public static Restriction equalRestriction(String name, @NonNull Object value, String equalSign, String paramSuffix) {
-        String paramName = name;
-        if (StringUtils.isNotBlank(paramSuffix)) {
-            paramName = name + paramSuffix;
-        }
-        Restriction build = Restriction.builder().condition(getName(name) + " " + equalSign + " " + MybatisUtils.segment(MybatisUtils.CONDITION_SEGMENT_PREFIX, paramName)).build();
-        buildParamMap(paramName, value, build);
         return build;
     }
 

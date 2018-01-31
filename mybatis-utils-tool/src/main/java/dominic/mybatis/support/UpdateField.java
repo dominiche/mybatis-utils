@@ -24,10 +24,11 @@ public class UpdateField extends UpdateFieldUnit {
     private String field;
 
     public static <T> UpdateField set(@NonNull String name, T value) {
-        String field = name + "=" + MybatisUtils.segment(MybatisUtils.UPDATE_SEGMENT_PREFIX, name);
+        String paramName = MybatisUtils.paramName(MybatisUtils.UPDATE_SEGMENT_PREFIX, name);
+        String field = name + "=" + MybatisUtils.paramSegment(paramName);
         UpdateField build = UpdateField.builder().field(field).build();
         HashMap<String, Object> hashMap = Maps.newHashMap();
-        hashMap.put(MybatisUtils.keyName(MybatisUtils.UPDATE_SEGMENT_PREFIX, name), value);
+        hashMap.put(paramName, value);
         build.setParamMap(hashMap);
         return build;
     }

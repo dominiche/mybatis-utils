@@ -134,10 +134,10 @@ public class RestrictionsUtils {
     }
 
     private static Restriction getBeginRestriction(String columnName, String timeStr) {
-        return Restriction.equalRestriction(columnName, timeStr, ">=", "_begin");
+        return Restriction.greaterEqual(columnName, timeStr);
     }
 
     private static Restriction getEndRestriction(String columnName, String timeStr) {
-        return Restriction.equalRestriction(columnName, timeStr, "<=", "_end");
+        return Restriction.lessEqual(columnName, timeStr);
     }
 }

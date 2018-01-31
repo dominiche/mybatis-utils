@@ -1,5 +1,7 @@
 package dominic.mybatis.constants;
 
+import org.apache.commons.lang.RandomStringUtils;
+
 /**
  * Created by Administrator:herongxing on 2018/1/10 14:08.
  */
@@ -36,12 +38,11 @@ public interface MybatisUtils {
         return String.format("#{%s}", name);
     }
 
-    static String segment(String prefix, String name) {
-        return String.format("#{%s}", prefix + "_" + name);
+    static String paramSegment(String paramName) {
+        return String.format("#{%s}", paramName);
     }
-
-    static String keyName(String prefix, String name) {
-        return prefix + "_" + name;
+    static String paramName(String prefix, String name) {
+        return prefix + "_" + name + "_" + RandomStringUtils.random(3, true, true);
     }
 
     static String wrapBeanName(int index) {
