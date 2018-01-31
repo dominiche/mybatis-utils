@@ -5,6 +5,12 @@
 
 
 ###版本更新日志：
+####2.1.0 Restriction改造
+    （1）Restriction添加notIn支持
+    
+####2.0.4: RestrictionsUtils, fix @DatePolicy begin and end 
+    预编译参数名互相覆盖的问题（临时解决方案）
+    
 ####2.0.3: TransformUtils, fix number type convert exception
     修复number类型的字段转换出错，如：Integer转成Long等
 

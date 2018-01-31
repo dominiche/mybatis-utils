@@ -80,6 +80,10 @@ public class Restrictions extends RestrictionUnit {
             appender.append(Restriction.in(name, collection));
             return this;
         }
+        public <T> Restrictions.RestrictionsBuilder notIn(String name, Collection<T> collection) {
+            appender.append(Restriction.notIn(name, collection));
+            return this;
+        }
         public Restrictions.RestrictionsBuilder like(String name, String value) {
             appender.append(Restriction.like(name, value));
             return this;

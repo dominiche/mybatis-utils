@@ -86,10 +86,18 @@ public class Restriction extends RestrictionUnit {
     }
 
     public static <R> Restriction in(String name, Collection<R> collection) {
+        return inRestriction(name, collection, "IN");
+    }
+
+    public static <R> Restriction notIn(String name, Collection<R> collection) {
+        return inRestriction(name, collection, "NOT IN");
+    }
+
+    private static <R> Restriction inRestriction(String name, Collection<R> collection, String inSign) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(collection), "arg list can't be empty!");
         boolean first = true;
         StringBuilder builder = new StringBuilder(getName(name));
-        builder.append(" IN (");
+        builder.append(" ").append(inSign).append(" (");
         int count = 0;
         HashMap<String, Object> hashMap = Maps.newHashMap();
         for (R r : collection) {
@@ -118,7 +126,7 @@ public class Restriction extends RestrictionUnit {
     public static Restriction lessThan(String name, Object value) {
         return equalRestriction(name, value, "<");
     }
-    public static Restriction equalRestriction(String name, Object value, String equalSign) {
+    private static Restriction equalRestriction(String name, Object value, String equalSign) {
         return equalRestriction(name, value, equalSign, null);
     }
     //todo RestrictionsUtils的处理date类型param名字相同问题的临时解决
