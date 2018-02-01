@@ -2,6 +2,7 @@ package dominic.test;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.stream.Restrictions;
 import dominic.mybatis.utils.RestrictionsUtils;
 import dominic.test.dto.ExchangeBillSearchDTO;
@@ -31,6 +32,14 @@ public class RestrictionsUtilsTest {
     public void test() {
         Restrictions build = Restrictions.builder().eq("hello", "string").eq("efg",546).notIn("word", Lists.newArrayList(1,2,3)).build();
         build = Restrictions.builder(build).greaterEqual("abc", 1234).build();
+        System.out.println(build.SQL());
+    }
+
+    @Test
+    public void testOr() {
+        Restrictions build = Restrictions.builder().eq("hello", "string").eq("efg",546).build();
+        build = Restrictions.builder().or(build).greaterEqual("abc", 1234).build();
+        build = Restrictions.builder().eq("test", 568).or(build).or(Restriction.eq("orTest", 123)).greaterEqual("abc", 1234).build();
         System.out.println(build.SQL());
     }
 }

@@ -1,14 +1,15 @@
 
 
-暂不支持父类字段获取
+暂不支持父类字段获取、原始类型字段获取
 
 
 
 ###版本更新日志：
-####2.1.0 Restriction改造
+####2.1.0 Restrictions改造
     （1）Restriction添加notIn支持
     （2）预编译参数名加入3位随机数，修复一个字段使用多次，因预编译参数名相同而取到相同值的问题
         （一个字段使用多次的典型场景：开始时间和结束时间）
+    （3）Restrictions添加or支持
     
 ####2.0.4: RestrictionsUtils, fix @DatePolicy begin and end 
     预编译参数名互相覆盖的问题（临时解决方案）

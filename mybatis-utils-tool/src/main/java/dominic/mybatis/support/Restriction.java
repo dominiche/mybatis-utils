@@ -21,6 +21,12 @@ import static dominic.mybatis.utils.SqlBuildUtils.isFirstAndAppend;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Restriction extends RestrictionUnit {
+    /**
+     * 完整的一个条件表达式，如：
+     * `name`='hello'
+     * `name` like 'hel%'
+     * `description` is not null
+     */
     private String condition;
 
     private static <T> void buildParamMap(String paramName, @NonNull T value, Restriction build) {

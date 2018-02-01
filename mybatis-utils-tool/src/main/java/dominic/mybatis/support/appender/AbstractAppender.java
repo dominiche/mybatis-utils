@@ -15,7 +15,8 @@ import java.util.List;
 public abstract class AbstractAppender<T extends SupportUnit> implements SupportUnit {
     public static final String COMMA = ",";
     public static final String SPACE = " ";
-    public static final String AND = " and ";
+    public static final String AND = " AND ";
+    public static final String OR = " OR ";
 
 
     private List<T> appenderList = new ArrayList<>();
@@ -43,5 +44,10 @@ public abstract class AbstractAppender<T extends SupportUnit> implements Support
             builder.append(support.SQL());
         }
         return builder.toString();
+    }
+
+    @Override
+    public String toString() {
+        return SQL();
     }
 }

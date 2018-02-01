@@ -93,10 +93,10 @@ public class RestrictionsUtils {
                         DateRangePolicy range = datePolicy.range();
                         if(range == DateRangePolicy.BEGIN){
                             String timeStr = DateUtils.TIME_FORMAT.format(date);
-                            builder.restriction(getBeginRestriction(columnName, timeStr));
+                            builder.and(getBeginRestriction(columnName, timeStr));
                         }else if(range == DateRangePolicy.END){
                             String timeStr = DateUtils.TIME_FORMAT.format(date);
-                            builder.restriction(getEndRestriction(columnName, timeStr));
+                            builder.and(getEndRestriction(columnName, timeStr));
                         }
                     }
                 } else {
@@ -118,17 +118,17 @@ public class RestrictionsUtils {
         if(dateType == DateTypePolicy.DATE){
             if(range == DateRangePolicy.BEGIN){
                 String timeStr = DateUtils.DATE_FORMAT.format(date) + " 00:00:00";
-                builder.restriction(getBeginRestriction(columnName, timeStr));
+                builder.and(getBeginRestriction(columnName, timeStr));
             }else if(range == DateRangePolicy.END){
                 String timeStr = DateUtils.DATE_FORMAT.format(date) + " 23:59:59";
-                builder.restriction(getEndRestriction(columnName, timeStr));
+                builder.and(getEndRestriction(columnName, timeStr));
             }
         } else if(dateType == DateTypePolicy.DATE_TIME){
             String timeStr = DateUtils.TIME_FORMAT.format(date);
             if(range == DateRangePolicy.BEGIN){
-                builder.restriction(getBeginRestriction(columnName, timeStr));
+                builder.and(getBeginRestriction(columnName, timeStr));
             }else if(range == DateRangePolicy.END){
-                builder.restriction(getEndRestriction(columnName, timeStr));
+                builder.and(getEndRestriction(columnName, timeStr));
             }
         }
     }
