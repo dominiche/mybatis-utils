@@ -6,9 +6,11 @@ import dominic.mybatis.support.Restriction;
 import dominic.mybatis.support.RestrictionUnit;
 import dominic.mybatis.support.appender.AbstractAppender;
 import dominic.mybatis.support.appender.ConditionAppender;
+import org.apache.commons.collections.MapUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Administrator:herongxing on 2017/4/18 16:21.
@@ -20,7 +22,12 @@ public class Restrictions extends RestrictionUnit {
     Restrictions(ConditionAppender appender) {
         this.appender = appender;
         HashMap<String, Object> hashMap = Maps.newHashMap();
-        appender.getAppenderList().forEach(condition -> hashMap.putAll(condition.getRestriction().getParamMap()));
+        appender.getAppenderList().forEach(condition -> {
+            Map<String, Object> paramMap = condition.getRestriction().getParamMap();
+            if (MapUtils.isNotEmpty(paramMap)) {
+                hashMap.putAll(paramMap);
+            }
+        });
         setParamMap(hashMap);
     }
 
@@ -42,12 +49,19 @@ public class Restrictions extends RestrictionUnit {
     }
 
     public Restrictions and(RestrictionUnit restriction) {
-        appender.append(Condition.create(restriction, AbstractAppender.AND));
-        return this;
+        return add(restriction, AbstractAppender.AND);
     }
 
     public Restrictions or(RestrictionUnit restriction) {
-        appender.append(Condition.create(restriction, AbstractAppender.OR));
+        return add(restriction, AbstractAppender.OR);
+    }
+
+    private Restrictions add(RestrictionUnit restriction, String separator) {
+        appender.append(Condition.create(restriction, separator));
+        Map<String, Object> paramMap = getParamMap();
+        if (MapUtils.isNotEmpty(restriction.getParamMap())) {
+            paramMap.putAll(restriction.getParamMap());
+        }
         return this;
     }
 

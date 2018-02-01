@@ -40,6 +40,8 @@ public class RestrictionsUtilsTest {
         Restrictions build = Restrictions.builder().eq("hello", "string").eq("efg",546).build();
         build = Restrictions.builder().or(build).greaterEqual("abc", 1234).build();
         build = Restrictions.builder().eq("test", 568).or(build).or(Restriction.eq("orTest", 123)).greaterEqual("abc", 1234).build();
+        build.or(Restriction.eq("haha", "holding"));
         System.out.println(build.SQL());
+        System.out.println(build.directSQL());
     }
 }

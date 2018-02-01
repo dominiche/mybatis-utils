@@ -42,7 +42,7 @@ public interface MybatisUtils {
         return String.format("#{%s}", paramName);
     }
     static String paramName(String prefix, String name) {
-        return prefix + "_" + name + "_" + RandomStringUtils.random(3, true, true);
+        return prefix + "_" + name + "_" + RandomStringUtils.random(5, true, true);
     }
 
     static String wrapBeanName(int index) {
