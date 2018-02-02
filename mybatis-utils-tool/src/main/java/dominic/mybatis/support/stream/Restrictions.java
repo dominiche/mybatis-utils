@@ -14,6 +14,9 @@ import java.util.Map;
 
 /**
  * Created by Administrator:herongxing on 2017/4/18 16:21.
+ * 注意：OR的用法
+ * OR关键字和AND关键字，可以一起使用，需要注意，AND的优先级高于OR。因此，当两者一起使用时，应该先运算AND两边的条件表达式，再运算OR两边的条件表达式
+ * 因此，为了Restrictions中构建sql与or顺序无关，在构建sql时会先将所有CONDITION排序，即所有的OR CONDITION都放到最后
  */
 public class Restrictions extends RestrictionUnit {
 
