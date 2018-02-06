@@ -82,6 +82,7 @@ public abstract class AbstractUpdateService<T> {
                 .SET(updateFieldUnit.SQL())
                 .WHERE(restriction.SQL());
         Map<String, Object> map = getParamMap(sql.toString());
+        map.putAll(updateFieldUnit.getParamMap());
         map.putAll(restriction.getParamMap());
         return baseUpdateDAO.update(map);
     }
