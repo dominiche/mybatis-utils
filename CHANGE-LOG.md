@@ -1,9 +1,4 @@
 
-
-暂不支持父类字段获取、原始类型字段获取
-
-
-
 ## 版本更新日志：
 ### 2.1.0 Restrictions改造
 * （1）Restriction添加notIn支持

@@ -1,0 +1,54 @@
+server:
+    port: 8080
+    context-path:
+
+logging:
+    config: classpath:logback-spring.xml
+    level:
+        org.apache.mybatis: DEBUG
+        org.spring.framework: DEBUG
+
+spring:
+    application:
+        name: mybatis-utils-test
+    datasource-write:
+        name: dev_daxmall
+        url: jdbc:mysql://localhost:3306/dev_daxmall?useUnicode=true&amp;characterEncoding=utf8
+        username: dev
+        password: 123456
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        filters: stat
+        maxActive: 20
+        initialSize: 10
+        maxWait: 1200
+        minIdle: 1
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 'x'
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxOpenPreparedStatements: 20
+    datasource-read:
+        name: dev_daxmall
+        url: jdbc:mysql://localhost:3306/dev_daxmall?useUnicode=true&amp;characterEncoding=utf8
+        username: dev
+        password: 123456
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        filters: stat
+        maxActive: 20
+        initialSize: 10
+        maxWait: 1200
+        minIdle: 1
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 'x'
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxOpenPreparedStatements: 20
+
