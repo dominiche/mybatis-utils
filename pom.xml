@@ -138,16 +138,4 @@
     </plugins>
   </build>
 
-  <distributionManagement>
-    <repository>
-      <id>releases</id>
-      <name>Nexus Releasse Repository</name>
-      <url>http://10.0.2.101:8081/nexus/content/repositories/release</url>
-    </repository>
-    <snapshotRepository>
-      <id>snapshots</id>
-      <name>Nexus Snapshots Repository</name>
-      <url>http://10.0.2.101:8081/nexus/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
 </project>

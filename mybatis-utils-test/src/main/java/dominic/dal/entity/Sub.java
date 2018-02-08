@@ -10,10 +10,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 
- * ls_sub
- * 
- **/
+ * 注：`@Data @Builder @NoArgsConstructor @AllArgsConstructor` 这四个注解是Lombok的注解，IDE需要装相应插件支持（idea，eclipse等都有支持）
+ 通过Lombok能帮我们减少很多样板代码，如`@Data`可以帮我们自动生成getter/setter方法，
+ 同时重写toString，hashCode方法，其他的可以自行了解；`@TableName @IdName`和`@UseUnderScoreToCamelCase`是mybatis-utils的自定义注解，
+ 前两个分别是说entity对应的表名和主键id名，后一个是告诉mybatis-utils，表字段要使用驼峰转下划线，如字段payDate转成SQL时为pay_date
+ */
 @Data
 @Builder
 @NoArgsConstructor

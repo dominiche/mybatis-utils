@@ -4,7 +4,7 @@
 做web项目时，大多都是单表的增删改查需求，遇到页面有很多的查询条件的场景时（很多这样的场景），
 构建sql语句就变的很麻烦，不是在provider里动态构建就是在注解里写动态标签，
 这些工作都是类似的，做多了这种需求就感觉到很累，尤其需求改动时超级麻烦。特别是在注解中用动态标签时，
-老是担心哪里改少了什么或者忘了什么没删掉，导致出现莫名奇妙的错误，因为这些错误还很难debug出来。
+老是担心哪里改少了什么或者忘了什么没删掉，导致出现莫名奇妙的错误，而且这些错误还很难debug出来。
 所以就想能不能写个工具出来自动生成这部分sql，到时产品说要加一个查询字段，我也只需在dto中相应加一个字段就行，
 简单方便。所以就有了这个项目。
 
@@ -12,18 +12,18 @@
 
 ### mybatis-utils配置
 1. 依赖
-最新的pom依赖(请自己下载源码install到本地仓库，有私服的可以推送到私服)
+需要添加的pom依赖(请自行下载源码install到本地仓库，有私服的可以推送到私服)
 ```xml
 <dependency>
     <groupId>dominic</groupId>
     <artifactId>mybatis-utils-service</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.1.2-SNAPSHOT</version> <!-- 版本有改动请自行改用最新版本 -->
 </dependency>
 ````
 2. 配置
-在mybatis扫描配置中加入"dominic.mybatis.dao"，即basePackage属性中加入"dominic.mybatis.dao"
+在mybatis扫描配置中加入"dominic.mybatis.dao"即可，即basePackage属性中加入"dominic.mybatis.dao"
     * 如果是spring boot项目，可以这样配置
-    (这里还可以细分为主从配置，即配两个sqlSessionFactory，一主一从，分别扫描"dominic.mybatis.dao.update"、"dominic.mybatis.dao.query")
+    (这里还可以细分为主从配置，即配两个sqlSessionFactory，一主一从，分别扫描"dominic.mybatis.dao.update"、"dominic.mybatis.dao.query"。mybatis-utils-test就是这样配置的)
     ```java
     @MapperScan(basePackages={/*"其他的dao包",*/"dominic.mybatis.dao.update"}, sqlSessionFactoryRef="sqlSessionFactory")
     ```
@@ -50,58 +50,9 @@ public class SubEntityQueryService extends AbstractQueryService<Sub> {
 public class SubEntityUpdateService extends AbstractUpdateService<Sub> {
 }
 ```
-Sub
-```java
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@TableName("ls_sub")
-@IdName("sub_id")
-@UseUnderScoreToCamelCase
-public class Sub implements Serializable {
-    /**
-     * 订购id
-     */
-    private Long subId;
-    /**
-     * 订购用户名称
-     */
-    private String userName;
-    /**
-     * 用户Id
-     */
-    private String userId;
-    /**
-     * 订购时间
-     */
-    private java.util.Date subDate;
-    /**
-     * 购买时间
-     */
-    private java.util.Date payDate;
-    /**
-     * 订购流水号
-     */
-    private String subNumber;
-    /**
-     * 实际总值
-     */
-    private java.math.BigDecimal actualTotal;
-    /**
-     * 订单状态
-     */
-    private Integer status;
-    /** 订单类型 */
-    private String subType;
-}
-```
-（注：`@Data @Builder @NoArgsConstructor @AllArgsConstructor` 这四个注解是Lombok的注解，
-通过Lombok能帮我们减少很多样板代码，如`@Data`可以帮我们自动生成getter/setter方法，
-同时重写toString，hashCode方法，其他的可以自行了解；`@TableName @IdName`和`@UseUnderScoreToCamelCase`是mybatis-utils的自定义注解，
-前两个分别是说entity对应的表名和主键id名，后一个是告诉mybatis-utils，表字段要使用驼峰转下划线，如字段payDate转成SQL时为pay_date）
 
-### 使用举例（源码在mybatis-utils-test项目）
+### 使用举例
+mybatis-utils-test项目是mybatis-utils的使用demo，下面的例子都可以在test项目中找到源码
 #### 1. 查询
 * 根据DTO查询
     ```java
@@ -116,7 +67,7 @@ public class Sub implements Serializable {
     ```
     日志级别为debug时，mybatis打印出来的sql是这样的：
     ```
-    2018-02-07 14:06:42.942 [main] DEBUG d.m.dao.query.BaseQueryDAO.query - ==>  Preparing: select `sub_id`,`user_name`,`user_id`,`sub_date`,`pay_date`,`sub_number`,`actual_total`,`status`,`section_on_way`,`sub_settlement_sn`,`addr_order_sn`,`sub_type` from ls_sub where `user_name` IN (?) AND `pay_date`>=? AND `pay_date`<=? AND `status` IN (?,?)
+    2018-02-07 14:06:42.942 [main] DEBUG d.m.dao.query.BaseQueryDAO.query - ==>  Preparing: select `sub_id`,`user_name`,`user_id`,`sub_date`,`pay_date`,`sub_number`,`actual_total`,`status`,`section_on_way`,`sub_settlement_sn`,`addr_order_sn`,`sub_type` from `order` where `user_name` IN (?) AND `pay_date`>=? AND `pay_date`<=? AND `status` IN (?,?)
     2018-02-07 14:06:42.973 [main] DEBUG d.m.dao.query.BaseQueryDAO.query - ==> Parameters: 406226662983(String), 2017-06-20 00:00:00(String), 2017-06-30 00:00:00(String), 3(Integer), 4(Integer)
     2018-02-07 14:06:42.997 [main] DEBUG d.m.dao.query.BaseQueryDAO.query - <==      Total: 1
     ```
@@ -124,7 +75,7 @@ public class Sub implements Serializable {
     queryByBean方法根据DTO来查询，这样增减查询条件就能通过增减相应字段来实现，
     而且能支持时间区段查询和集合查询。
 
-* 跟DTO分页查询，并排序
+* 根据DTO分页查询，并排序
     ```java
     PageParam pageParam = PageParam.builder().pageIndex(0).pageSize(10).build();
     AbstractAppender<OrderSupport> orderSupportAppender = OrderSupportAppender.newInstance()
@@ -133,7 +84,7 @@ public class Sub implements Serializable {
     ```
     日志打印的sql：
     ```
-    2018-02-07 14:42:16.350 [main] DEBUG d.m.dao.query.BaseQueryDAO.query - ==>  Preparing: select `sub_id`,`user_name`,`user_id`,`sub_date`,`pay_date`,`sub_number`,`actual_total`,`status`,`sub_type` from ls_sub where `user_name` IN (?) AND `pay_date`<=? AND `status` IN (?,?) order by sub_date DESC,actual_total DESC limit 0,10
+    2018-02-07 14:42:16.350 [main] DEBUG d.m.dao.query.BaseQueryDAO.query - ==>  Preparing: select `sub_id`,`user_name`,`user_id`,`sub_date`,`pay_date`,`sub_number`,`actual_total`,`status`,`sub_type` from `order` where `user_name` IN (?) AND `pay_date`<=? AND `status` IN (?,?) order by sub_date DESC,actual_total DESC limit 0,10
     2018-02-07 14:42:16.373 [main] DEBUG d.m.dao.query.BaseQueryDAO.query - ==> Parameters: 406226662983(String), 2017-06-30 00:00:00(String), 3(Integer), 4(Integer)
     2018-02-07 14:42:16.400 [main] DEBUG d.m.dao.query.BaseQueryDAO.query - <==      Total: 10
     ```
@@ -152,8 +103,8 @@ public class Sub implements Serializable {
     ```
 
 #### 2. 更新
-##### (1)插入数据
-* insert插入数据，没有回填主键subId
+##### (1) 插入数据
+* insert插入数据，没有回填主键
     ```java
     Sub order = Sub.builder()
             .userName("dominic")
@@ -173,12 +124,12 @@ public class Sub implements Serializable {
     2018-02-07 15:36:07.748 [main] DEBUG d.m.dao.update.BaseUpdateDAO.insert - <==    Updates: 1
     Sub(subId=null, userName=dominic, userId=123456, subDate=Wed Feb 07 15:36:07 CST 2018, payDate=null, subNumber=O1234, actualTotal=0.01, status=0, subType=null, createTime=null)
     ```
-* save插入数据，会回填主键subId
+* save插入数据，会回填主键
     ```java
     int result = subEntityUpdateService.save(order);
     System.out.println(order);
     ```
-    结果日志打印（注意subId的值，已经回填了主键）：
+    结果日志打印（注意subId的值，已经回填了主键subId的值）：
     ```
     2018-02-07 15:43:18.932 [main] DEBUG d.m.dao.update.BaseUpdateDAO.save - ==>  Preparing: INSERT INTO `order` (`user_name`, `user_id`, `sub_date`, `sub_number`, `actual_total`, `status`) VALUES (?, ?, ?, ?, ?, ?)
     2018-02-07 15:43:18.959 [main] DEBUG d.m.dao.update.BaseUpdateDAO.save - ==> Parameters: dominic(String), 123456(String), 2018-02-07 15:43:18.595(Timestamp), O1235(String), 0.01(BigDecimal), 0(Integer)
@@ -203,7 +154,7 @@ public class Sub implements Serializable {
     2
     ```
 
-##### 更新数据
+##### (2) 更新数据
 * 根据dto更新
     ```java
     Sub order = Sub.builder().payDate(new Date()).status(1).build();
@@ -240,9 +191,13 @@ public class Sub implements Serializable {
     int result = subEntityUpdateService.update(updateFields, restrictions);
     ```
 
+相关源码直通车：
+[SubEntityQueryServiceTest](https://github.com/dominiche/mybatis-utils/blob/master/mybatis-utils-test/src/test/java/dominic/test/SubEntityQueryServiceTest.java)
+[SubEntityUpdateServiceTest](https://github.com/dominiche/mybatis-utils/blob/master/mybatis-utils-test/src/test/java/dominic/test/SubEntityUpdateServiceTest.java)
 
 ### 注意事项
 
+* 本项目是基于mybatis构建的，SQL语句适用于MySQL
 * 构建SQL时，暂不支持父类字段获取、原始类型字段获取 (todo)
 * 批量insert时要注意，因为这里为了不遗漏数据，所以是不会忽略为null的字段的，
 即批量insert时默认处理null，普通情况可以不用考虑这里的区别；只有表的某个字段有默认值，
