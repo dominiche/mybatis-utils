@@ -25,14 +25,14 @@
     * 如果是spring boot项目，可以这样配置
     (这里还可以细分为主从配置，即配两个sqlSessionFactory，一主一从，分别扫描"dominic.mybatis.dao.update"、"dominic.mybatis.dao.query"。mybatis-utils-test就是这样配置的)
     ```java
-    @MapperScan(basePackages={/*"其他的dao包",*/"dominic.mybatis.dao.update"}, sqlSessionFactoryRef="sqlSessionFactory")
+    @MapperScan(basePackages={/*"其他的dao包",*/"dominic.mybatis.dao"}, sqlSessionFactoryRef="sqlSessionFactory")
     ```
     * 如果是传统spring xml配置，也是在basePackage属性中加入"dominic.mybatis.dao"，如：
     ```xml
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="dataSource" ref="dataSource" />
         <property name="sqlSessionFactory" value="sqlSessionFactory" />
-        <property name="basePackage" value="dominic.mybatis.dao.update" /> <!-- 还有其他的dao包需要扫描，只需用英文逗号分隔即可 -->
+        <property name="basePackage" value="dominic.mybatis.dao" /> <!-- 还有其他的dao包需要扫描，只需用英文逗号分隔即可 -->
         <!-- other properties -->
     </bean>
     ```
